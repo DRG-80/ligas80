@@ -1,1 +1,31 @@
 @import "bootstrap/dist/css/bootstrap.min.css";
+.hero {
+  height: 80vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  padding-left: 60px;
+  background: linear-gradient(to right, #111, #222);
+  color: white;
+}
+
+.hero-title {
+  font-size: 3rem;
+  font-weight: bold;
+}
+
+.hero-subtitle {
+  font-size: 1.3rem;
+  margin-bottom: 20px;
+}
+
+.hero-btn {
+  padding: 12px 25px;
+  font-size: 1.2rem;
+}
+
+/* 👇 Ocultar automáticamente el Hero cuando NO estemos en "/" */
+body:not(.home-route) #static-hero {
+  display: none;
+}
