@@ -1,0 +1,57 @@
+.empezar-section {
+  padding: 60px 20px;
+  background: #fff;
+  background: linear-gradient(to right, #FF0409, #3C0304);
+
+
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+  }
+
+  .section-title {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+    color: white;
+  }
+
+  .section-lead {
+    color: #000000;
+    margin-bottom: 30px;
+    font-size: 2rem;
+
+  }
+
+  .btn-black {
+    background-color: #000000;
+    color: #c53131;
+    border: none;
+    padding: 15px 25px;
+    border-radius: 7px;
+  }
+
+  .btn-black:hover {
+    background-color: #3C0304;
+    color: white;
+  }
+
+  @media (max-width: 768px) {
+    .section-title {
+      font-size: 2rem;
+    }
+
+    .section-lead {
+      font-size: 1.5rem;
+      text-align: center;
+    }
+
+  }
+
+}
+
+
