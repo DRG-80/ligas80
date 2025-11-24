@@ -2,14 +2,31 @@
 
   <img src="Ligas80-logo.png" alt="Logo" class="header-logo">
 
-  <div class="nav-buttons">
-    <a routerLink="/" class="btn btn-red mx-2">Inicio</a>
-    <a routerLink="/login" class="btn btn-red mx-2">Iniciar Sesión</a>
-    <a routerLink="/register" class="btn btn-red mx-2">Mis Ligas</a>
-    <a routerLink="/register" class="btn btn-red mx-2">Equipos</a>
-    <a routerLink="/register" class="btn btn-red mx-2">Contacte con nosotros</a>
+  <button class="navbar-toggler d-md-none btn btn-red" type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#mobileMenu"
+          aria-controls="mobileMenu"
+          aria-expanded="false"
+          aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
 
+  <div class="nav-buttons d-none d-md-flex">
+    <a routerLink="/" class="btn-red">Inicio</a>
+    <a routerLink="/login" class="btn-red">Iniciar Sesión</a>
+    <a routerLink="/register" class="btn-red">Mis Ligas</a>
+    <a routerLink="/register" class="btn-red">Equipos</a>
+    <a routerLink="/register" class="btn-red">Contacte con nosotros</a>
+  </div>
 
+  <div class="collapse d-md-none w-100" id="mobileMenu">
+    <div class="d-flex flex-column align-items-center">
+      <a routerLink="/" class="btn-red mb-2 w-100">Inicio</a>
+      <a routerLink="/login" class="btn-red mb-2 w-100">Iniciar Sesión</a>
+      <a routerLink="/register" class="btn-red mb-2 w-100">Mis Ligas</a>
+      <a routerLink="/register" class="btn-red mb-2 w-100">Equipos</a>
+      <a routerLink="/register" class="btn-red mb-2 w-100">Contacte con nosotros</a>
+    </div>
   </div>
 
 </nav>
