@@ -1,7 +1,9 @@
 <nav class="navbar">
 
+  <!-- Logo centrado en mobile -->
   <img src="Ligas80-logo.png" alt="Logo" class="header-logo">
 
+  <!-- Botón hamburguesa solo en mobile -->
   <button class="navbar-toggler d-md-none btn btn-red" type="button"
           data-bs-toggle="collapse"
           data-bs-target="#mobileMenu"
@@ -11,6 +13,7 @@
     <span class="navbar-toggler-icon"></span>
   </button>
 
+  <!-- Menú de navegación -->
   <div class="nav-buttons d-none d-md-flex">
     <a routerLink="/" class="btn-red">Inicio</a>
     <a routerLink="/login" class="btn-red">Iniciar Sesión</a>
@@ -19,6 +22,7 @@
     <a routerLink="/register" class="btn-red">Contacte con nosotros</a>
   </div>
 
+  <!-- Menú desplegable en mobile -->
   <div class="collapse d-md-none w-100" id="mobileMenu">
     <div class="d-flex flex-column align-items-center">
       <a routerLink="/" class="btn-red mb-2 w-100">Inicio</a>

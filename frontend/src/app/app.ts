@@ -6,10 +6,12 @@ import {CardsSection} from './cards-section/cards-section';
 import {Footer} from './componentes/footer/footer';
 
 
+
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet,Header,Hero,CardsSection,Footer],
+  imports: [RouterOutlet, Header, Hero, CardsSection, Footer],
   templateUrl: './app.html',
+  standalone: true,
   styleUrl: './app.scss'
 })
 export class App {

@@ -7,7 +7,7 @@
   align-items: center;
   padding: 15px 30px;
   box-sizing: border-box;
-  position: fixed;
+  position: static;
   top: 0;
   left: 0;
   z-index: 1000;
@@ -76,4 +76,10 @@ body, app-root {
     width: 90%;
     margin: 5px 0;
   }
+
+  .collapse.d-md-none .btn-red {
+    max-width: 90%;   /* ya lo tienes */
+    margin: 10px 0 0 0; /* margen superior de 10px */
+  }
+
 }

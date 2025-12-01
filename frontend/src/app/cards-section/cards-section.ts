@@ -5,6 +5,7 @@ import { Component } from '@angular/core';
   imports: [],
   templateUrl: './cards-section.html',
   styleUrl: './cards-section.scss',
+  standalone: true
 })
 export class CardsSection {
 
