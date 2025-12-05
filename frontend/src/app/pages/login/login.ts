@@ -1,10 +1,10 @@
 import { Component } from '@angular/core';
 import { Auth } from '../../services/auth';
-import {Router, RouterLink} from '@angular/router';
-import {FormsModule} from '@angular/forms';
-import {CommonModule} from '@angular/common';
-import {Header} from '../../componentes/header/header';
-import {Footer} from '../../componentes/footer/footer';
+import { Router, RouterLink } from '@angular/router';
+import { FormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { Header } from '../../componentes/header/header';
+import { Footer } from '../../componentes/footer/footer';
 
 @Component({
   selector: 'app-login',
@@ -15,19 +15,30 @@ import {Footer} from '../../componentes/footer/footer';
 })
 export class Login {
 
-
   email = '';
   password = '';
   error = '';
 
   constructor(private auth: Auth, private router: Router) {}
 
-  submit() {
-    this.auth.login({ email: this.email, password: this.password })
-      .subscribe({
-        next: () => this.router.navigate(['/']),
-        error: () => this.error = 'Usuario o contraseña incorrecta'
-      });
+  submit() { // Ya no necesita ser async
+    this.error = '';
+
+
+    this.auth.login(this.email, this.password).subscribe({
+      next: () => {
+        // Login exitoso
+        this.router.navigate(['/']); // O '/home'
+      },
+      error: (err) => {
+        console.error(err);
+        if (err.status === 401 || err.status === 422) {
+          this.error = "Credenciales incorrectas";
+        } else {
+          this.error = "Error al iniciar sesión";
+        }
+      }
+    });
   }
 
 }

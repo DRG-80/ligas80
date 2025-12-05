@@ -5,6 +5,7 @@ import { Component } from '@angular/core';
   imports: [],
   templateUrl: './empezar-section.html',
   styleUrl: './empezar-section.scss',
+  standalone: true
 })
 export class EmpezarSection {
 

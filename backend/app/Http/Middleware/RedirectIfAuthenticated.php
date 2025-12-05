@@ -17,12 +17,19 @@ class RedirectIfAuthenticated
      * @param  string|null  ...$guards
      * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse
      */
-    public function handle(Request $request, Closure $next, ...$guards)
+    public function handle(Request $request, Closure $next, string ...$guards)
     {
         $guards = empty($guards) ? [null] : $guards;
 
         foreach ($guards as $guard) {
             if (Auth::guard($guard)->check()) {
+
+
+                if ($request->expectsJson() || $request->is('api/*')) {
+                    return response()->json(['message' => 'Ya has iniciado sesión.'], 200);
+                }
+
+
                 return redirect(RouteServiceProvider::HOME);
             }
         }

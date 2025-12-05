@@ -1,63 +1,51 @@
 import { Component } from '@angular/core';
-import {Header} from '../../componentes/header/header';
-import {Footer} from '../../componentes/footer/footer';
-import {FormsModule} from '@angular/forms';
-import {Router, RouterLink} from '@angular/router';
-import {Auth} from '../../services/auth';
+import { Auth } from '../../services/auth'; // Asegúrate que la ruta sea correcta
+import { Router } from '@angular/router';
+import { FormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { Footer } from '../../componentes/footer/footer';
+import { Header } from '../../componentes/header/header';
+import { lastValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-register',
-  imports: [Header,Footer,FormsModule,RouterLink],
-  templateUrl: './register.html',
-  styleUrl: './register.scss',
-  standalone: true
+  templateUrl: './register.html', // Asumiendo que existe
+  styleUrls: ['./register.scss'], // Asumiendo que existe
+  standalone: true,
+  imports: [CommonModule, FormsModule, Header, Footer]
 })
 export class Register {
+  name = '';
+  email = '';
+  password = '';
+  password_confirmation = '';
+  error: string | null = null;
 
-
-  name: string = '';
-  email: string = '';
-  password: string = '';
-  password_confirmation: string = '';
-
-  error: string = '';
-  loading: boolean = false;
   constructor(private auth: Auth, private router: Router) {}
 
-  submit() {
-    this.error = '';
-    this.loading = true;
+  async submit() {
+    this.error = null;
 
-    if (this.password !== this.password_confirmation) {
-      this.error = 'Las contraseñas no coinciden';
-      this.loading = false;
-      return;
-    }
-
-    this.auth.register({
-      name: this.name,
-      email: this.email,
-      password: this.password,
-      password_confirmation: this.password_confirmation
-    }).subscribe({
-      next: (res) => {
-        this.router.navigate(['/login']);
-      },
-      error: (err) => {
-
-        this.loading = false;
+    try {
 
 
-        if (err.error && err.error.message) {
 
-          this.error = err.error.message;
+      const response = await lastValueFrom(
+        this.auth.register(this.name, this.email, this.password, this.password_confirmation)
+      );
 
-        } else {
+      console.log('Registro exitoso:', response);
 
-          this.error = 'Error inesperado';
-        }
+      this.router.navigate(['/login']);
+
+    } catch (err: any) {
+      console.error('Error completo:', err); // Para depurar en consola
+
+      if (err.status === 422) {
+        this.error = 'Datos no válidos: ' + (err.error.message || '');
+      } else {
+        this.error = 'Error al registrar. Inténtalo de nuevo.';
       }
-    });
+    }
   }
-
 }
