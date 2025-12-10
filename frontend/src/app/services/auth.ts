@@ -1,6 +1,6 @@
-import { Injectable } from '@angular/core';
+import {Injectable, signal} from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, switchMap } from 'rxjs';
+import {catchError, Observable, switchMap, tap} from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -8,6 +8,7 @@ import { Observable, switchMap } from 'rxjs';
 export class Auth {
 
   private baseUrl = 'http://localhost:8000';
+  public usuarioActual = signal<any>(null);
 
   constructor(private http: HttpClient) {}
 
@@ -23,7 +24,9 @@ export class Auth {
         `${this.baseUrl}/login`,
         { email, password },
         { withCredentials: true }
-      ))
+      )),
+      switchMap(() => this.user())
+
     );
   }
 
@@ -51,8 +54,31 @@ export class Auth {
 
   // Obtener usuario autenticado
   user(): Observable<any> {
-    return this.getCSRF().pipe(
-      switchMap(() => this.http.get(`${this.baseUrl}/api/user`, { withCredentials: true }))
+    // Nota: Para pedir el usuario (GET) no suele hacer falta pedir CSRF antes,
+    // pero si lo dejas tampoco pasa nada malo.
+
+    return this.http.get(`${this.baseUrl}/api/user`, { withCredentials: true }).pipe(
+
+
+      tap((userData: any) => {
+        this.usuarioActual.set(userData);
+      }),
+
+      // 3. Si da error (ej. 401 no logueado), ponemos la señal en null
+      catchError((err) => {
+        this.usuarioActual.set(null);
+        throw err; // Re-lanzamos el error para que lo vea la consola si hace falta
+      })
     );
+  }
+
+  tieneIdNegativo(): boolean {
+    const user = this.usuarioActual();
+
+
+    if (!user) return false;
+
+    // 2. Comprobamos el ID
+    return user.id < 0;
   }
 }

@@ -1,32 +1,34 @@
 <nav class="navbar">
 
-  <!-- Logo centrado en mobile -->
   <img src="Ligas80-logo.png" alt="Logo" class="header-logo">
 
-  <!-- Botón hamburguesa solo en mobile -->
   <button class="navbar-toggler d-md-none btn btn-red" type="button"
           data-bs-toggle="collapse"
-          data-bs-target="#mobileMenu"
-          aria-controls="mobileMenu"
-          aria-expanded="false"
-          aria-label="Toggle navigation">
+          data-bs-target="#mobileMenu">
     <span class="navbar-toggler-icon"></span>
   </button>
 
-  <!-- Menú de navegación -->
-  <div class="nav-buttons d-none d-md-flex">
+  <div class="nav-buttons d-none d-md-flex gap-2">
     <a routerLink="/" class="btn-red">Inicio</a>
-    <a routerLink="/login" class="btn-red">Iniciar Sesión</a>
+
+    <a *ngIf="!estaLogueado()" routerLink="/login" class="btn-red">Iniciar Sesión</a>
+
+    <a *ngIf="estaLogueado()" (click)="logout()" class="btn-red">Cerrar Sesión</a>
+    <a *ngIf="auth.tieneIdNegativo()" routerLink="/jugadores" class="btn-red">Gestionar Jugadores</a>
+
     <a routerLink="/register" class="btn-red">Mis Ligas</a>
     <a routerLink="/register" class="btn-red">Equipos</a>
     <a routerLink="/register" class="btn-red">Contacte con nosotros</a>
   </div>
 
-  <!-- Menú desplegable en mobile -->
   <div class="collapse d-md-none w-100" id="mobileMenu">
-    <div class="d-flex flex-column align-items-center">
+    <div class="d-flex flex-column align-items-center mt-3">
       <a routerLink="/" class="btn-red mb-2 w-100">Inicio</a>
-      <a routerLink="/login" class="btn-red mb-2 w-100">Iniciar Sesión</a>
+
+      <a *ngIf="!estaLogueado()" routerLink="/login" class="btn-red mb-2 w-100">Iniciar Sesión</a>
+
+      <button *ngIf="estaLogueado()" (click)="logout()" class="btn-red mb-2 w-100">Cerrar Sesión</button>
+
       <a routerLink="/register" class="btn-red mb-2 w-100">Mis Ligas</a>
       <a routerLink="/register" class="btn-red mb-2 w-100">Equipos</a>
       <a routerLink="/register" class="btn-red mb-2 w-100">Contacte con nosotros</a>

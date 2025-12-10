@@ -21,7 +21,7 @@ export class Login {
 
   constructor(private auth: Auth, private router: Router) {}
 
-  submit() { // Ya no necesita ser async
+  submit() {
     this.error = '';
 
 

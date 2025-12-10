@@ -1,9 +1,10 @@
-import { Component, signal } from '@angular/core';
+import {Component, inject, OnInit, signal} from '@angular/core';
 import {Router, RouterOutlet} from '@angular/router';
 import { Header } from './componentes/header/header';
 import {Hero} from './hero/hero';
 import {CardsSection} from './cards-section/cards-section';
 import {Footer} from './componentes/footer/footer';
+import {Auth} from './services/auth';
 
 
 
@@ -14,8 +15,16 @@ import {Footer} from './componentes/footer/footer';
   standalone: true,
   styleUrl: './app.scss'
 })
-export class App {
+export class App  implements OnInit{
   constructor(public router: Router) {}
 
+  private auth = inject(Auth);
 
+  ngOnInit() {
+
+    this.auth.user().subscribe({
+      next: (user) => console.log('✅ Sesión recuperada:', user.name),
+      error: () => console.log('ℹ️ Usuario no logueado')
+    });
+  }
 }
