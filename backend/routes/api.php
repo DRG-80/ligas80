@@ -15,6 +15,5 @@ Route::get('/jugadores', [JugadorController::class, 'index'])->name('jugador.ind
 //Route::get('/jugador/create', [JugadorController::class, 'create'])->name('jugador.create'); {};
 Route::post('jugadores', [JugadorController::class, 'store'])->name('jugador.store'); {};
 Route::get('/jugador/edit{id}', [JugadorController::class, 'edit'])->name('jugador.edit'); {};
-Route::delete('/jugador/destroy{id}', [JugadorController::class, 'destroy'])->name('jugador.destroy'); {};
-Route::put('/jugador/edit', [JugadorController::class, 'update'])->name('jugador.update'); {};
-
+Route::delete('/jugadores/{id}', [JugadorController::class, 'destroy'])->name('jugador.destroy'); {};
+Route::put('/jugadores/{id}', [JugadorController::class, 'update']);

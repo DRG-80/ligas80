@@ -15,9 +15,7 @@ class JugadorController extends Controller
         return response()->json($jugadores);
     }
 
-    /*public function create(){
-        return view('jugador.create');
-    }*/
+
 
     public function store(Request $request)
     {
@@ -41,74 +39,27 @@ class JugadorController extends Controller
     }
 
 
-    /*public function edit($id)
+
+
+    public function update(Request $request, $id)
     {
 
-        $jugador=Jugador::find($id);
-        return view('jugador.edit',compact('jugador'));
+        $jugador = Jugador::findOrFail($id);
 
-
-    }*/
-
-    public function update(Request $request){
-        $id=$request->id;
-        $jugador = Jugador::find($id);
-
-        if ($request->archivo && $request->urlImagen ){
-
-            return back()->withErrors(['imagen' => 'Debes elegir solo una opción (archivo o URL).']);
-
-        }
-
-        if ($request->hasFile('archivoImagen')) {
-
-
-            if ($jugador->imagen && file_exists(public_path($jugador->imagen))) {
-                unlink(public_path($jugador->imagen));
-            }
-
-            $imagen = $request->file('archivoImagen');
-            $nombreImagen = time() . '_' . $imagen->getClientOriginalName();
-            $imagen->move(public_path('imagenes'), $nombreImagen);
-            $imagenUrl = 'imagenes/' . $nombreImagen;
-
-            $jugador->imagen = $imagenUrl;
-        }
-
-        if ($request->urlImagen){
-
-            $jugador->imagen=$request->urlImagen;
-
-        }
-
-        $jugador->nombre=$request->nombre;
-        $jugador->apellidos=$request->apellidos;
-        $jugador->posicion=$request->posicion;
-        $jugador->media=$request->media;
-        $jugador->precio=$request->precio;
-        $jugador->save();
-        return redirect()->route('jugador.index');
-
-
-
-
-
-
+        $request->validate([
+            'nombre' => 'required',
+            'apellidos' => 'required',
+            'precio' => 'numeric'
+        ]);
+        $jugador->update($request->all());
+        return response()->json($jugador);
     }
 
     public function destroy($id)
     {
-        $jugador= Jugador::find($id);
 
-
-        if ($jugador->imagen && file_exists(public_path($jugador->imagen))) {
-            unlink(public_path($jugador->imagen));
-        }
-
-
-
+        $jugador = Jugador::findOrFail($id);
         $jugador->delete();
-        return redirect()->route('jugador.index');
-
+        return response()->json(['message' => 'Jugador eliminado correctamente'], 200);
     }
 }

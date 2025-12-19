@@ -20,6 +20,7 @@
           <th>Posición</th>
           <th class="text-center">Media</th>
           <th class="text-end">Precio</th>
+          <th>Acciones</th>
         </tr>
         </thead>
         <tbody>
@@ -29,6 +30,21 @@
           <td><span class="badge bg-primary">{{ j.posicion }}</span></td>
           <td class="text-center fw-bold">{{ j.media }}</td>
           <td class="text-end">{{ j.precio | currency:'EUR':'symbol':'1.0-0' }}</td>
+          <td class="text-center">
+
+            <button class="btn btn-warning btn-md me-2"
+                    data-bs-toggle="modal"
+                    data-bs-target="#modalEditar"
+                    (click)="cargarDatos(j)">
+              <i class="bi bi-pencil-square"></i>
+            </button>
+
+            <button class="btn btn-danger btn-md"
+                    title="Eliminar"
+                    (click)="eliminarJugador(j.id)">
+              <i class="bi bi-trash"></i>
+            </button>
+          </td>
         </tr>
         </tbody>
       </table>
@@ -86,6 +102,53 @@
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
 
         <button type="button" class="btn btn-primary" (click)="guardarJugador()">Guardar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="modalEditar" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-warning text-dark">
+        <h5 class="modal-title">Editar Jugador</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form>
+          <!-- Usamos el objeto jugadorEditado -->
+          <div class="mb-3">
+            <label class="form-label">Nombre</label>
+            <input type="text" class="form-control" [(ngModel)]="jugadorEditado.nombre" name="editNombre">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Apellidos</label>
+            <input type="text" class="form-control" [(ngModel)]="jugadorEditado.apellidos" name="editApellidos">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Posición</label>
+            <select class="form-select" [(ngModel)]="jugadorEditado.posicion" name="editPosicion">
+              <option value="POR">Portero</option>
+              <option value="DEF">Defensa</option>
+              <option value="MED">Medio</option>
+              <option value="DEL">Delantero</option>
+            </select>
+          </div>
+          <div class="row">
+            <div class="col-6 mb-3">
+              <label class="form-label">Media</label>
+              <input type="number" class="form-control" [(ngModel)]="jugadorEditado.media" name="editMedia">
+            </div>
+            <div class="col-6 mb-3">
+              <label class="form-label">Precio</label>
+              <input type="number" class="form-control" [(ngModel)]="jugadorEditado.precio" name="editPrecio">
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-warning" (click)="actualizarJugador()">Guardar Cambios</button>
       </div>
     </div>
   </div>

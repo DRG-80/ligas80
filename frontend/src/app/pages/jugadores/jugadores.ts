@@ -1,11 +1,12 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy,ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { FormsModule } from '@angular/forms';
+import Swal from 'sweetalert2';
 
-import { DataTablesModule } from 'angular-datatables';
+import { DataTablesModule,DataTableDirective} from 'angular-datatables';
 import { Config } from 'datatables.net';
 
 import { Header } from '../../componentes/header/header';
@@ -29,6 +30,15 @@ export class Jugadores implements OnInit, OnDestroy {
     apellidos: '',
     posicion: 'POR',
     media: 50,
+    precio: 0
+  };
+
+  jugadorEditado: any = {
+    id: null,
+    nombre: '',
+    apellidos: '',
+    posicion: '',
+    media: 0,
     precio: 0
   };
 
@@ -92,29 +102,90 @@ export class Jugadores implements OnInit, OnDestroy {
         next: (res) => {
           this.jugadores = res;
 
-          this.dtTrigger.next(null);
+          if (!this.dtTrigger.closed) {
+            this.dtTrigger.next(null);
+          }
         },
         error: (err) => console.error('Error cargando jugadores:', err)
       });
   }
+  //Para cargar el jugador en editar
+  cargarDatos(jugador: any) {
+
+    this.jugadorEditado = { ...jugador };
+  }
 
   guardarJugador() {
     if (!this.nuevoJugador.nombre || !this.nuevoJugador.apellidos) {
-      alert('Por favor rellena nombre y apellidos');
+      Swal.fire({
+        icon: 'warning',
+        title: 'Faltan datos',
+        text: 'Por favor rellena nombre y apellidos',
+        confirmButtonColor: '#d33'
+      });
       return;
     }
 
     this.http.post('http://localhost:8000/api/jugadores', this.nuevoJugador, { withCredentials: true })
       .subscribe({
         next: (res) => {
-          alert('Jugador creado correctamente');
-          window.location.reload();
+          Swal.fire({
+            icon: 'success',
+            title: '¡Jugador creado!',
+            text: 'El jugador se ha añadido correctamente.',
+            confirmButtonColor: '#3085d6',
+            confirmButtonText: 'Continuar'
+          }).then((result) => {
+            if (result.isConfirmed) {
+              window.location.reload();
+            }
+          });
         },
         error: (err) => {
           console.error('Error al guardar:', err);
-          alert('Error al guardar el jugador');
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'No se pudo guardar el jugador.',
+
+          });
         }
       });
+  }
+
+  actualizarJugador() {
+    this.http.put(`http://localhost:8000/api/jugadores/${this.jugadorEditado.id}`, this.jugadorEditado, { withCredentials: true })
+      .subscribe({
+        next: () => Swal.fire('Editado', 'Jugador actualizado', 'success').then(() => window.location.reload()),
+        error: () => Swal.fire('Error', 'No se pudo editar', 'error')
+      });
+  }
+
+  eliminarJugador(id: number) {
+    Swal.fire({
+      title: '¿Estás seguro?',
+      text: "No podrás revertir esta acción",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.http.delete(`http://localhost:8000/api/jugadores/${id}`, { withCredentials: true })
+          .subscribe({
+            next: () => {
+              Swal.fire('¡Eliminado!', 'El jugador ha sido borrado.', 'success')
+                .then(() => window.location.reload());
+            },
+            error: (e) => {
+              console.error(e);
+              Swal.fire('Error', 'No se pudo eliminar el jugador.', 'error');
+            }
+          });
+      }
+    });
   }
 
   ngOnDestroy(): void {
