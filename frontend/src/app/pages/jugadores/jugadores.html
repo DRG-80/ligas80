@@ -26,8 +26,11 @@
         <tbody>
         <tr *ngFor="let j of jugadores">
           <td>{{ j.nombre }}</td>
-          <td>{{ j.apellidos }}</td>
-          <td><span class="badge bg-primary">{{ j.posicion }}</span></td>
+          <td>{{ j.apellidos }}</td><td>
+  <span class="badge" [ngClass]="obtenerClasePosicion(j.posicion)">
+    {{ j.posicion }}
+  </span>
+        </td>
           <td class="text-center fw-bold">{{ j.media }}</td>
           <td class="text-end">{{ j.precio | currency:'EUR':'symbol':'1.0-0' }}</td>
           <td class="text-center">
@@ -79,7 +82,7 @@
             <select class="form-select" [(ngModel)]="nuevoJugador.posicion" name="posicion" required>
               <option value="POR">Portero (POR)</option>
               <option value="DEF">Defensa (DEF)</option>
-              <option value="MED">Medio (MED)</option>
+              <option value="MC">Medio (MED)</option>
               <option value="DEL">Delantero (DEL)</option>
             </select>
           </div>
@@ -130,7 +133,7 @@
             <select class="form-select" [(ngModel)]="jugadorEditado.posicion" name="editPosicion">
               <option value="POR">Portero</option>
               <option value="DEF">Defensa</option>
-              <option value="MED">Medio</option>
+              <option value="MC">Medio</option>
               <option value="DEL">Delantero</option>
             </select>
           </div>

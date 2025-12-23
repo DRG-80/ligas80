@@ -45,6 +45,7 @@
     "@types/datatables.net": "^1.10.28",
     "@types/jasmine": "~5.1.0",
     "@types/jquery": "^3.5.33",
+    "@types/jquery.datatables": "^1.10.36",
     "jasmine-core": "~5.8.0",
     "karma": "~6.4.0",
     "karma-chrome-launcher": "~3.2.0",

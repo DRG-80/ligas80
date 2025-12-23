@@ -95,6 +95,21 @@ export class Jugadores implements OnInit, OnDestroy {
     });
   }
 
+  obtenerClasePosicion(posicion: string): string {
+    switch (posicion) {
+      case 'POR':
+        return 'bg-warning text-dark';
+      case 'DEF':
+        return 'bg-info text-dark';
+      case 'MC':
+        return 'bg-success';
+      case 'DEL':
+        return 'bg-danger';
+      default:
+        return 'bg-secondary';
+    }
+  }
+
   cargarJugadores() {
 
     this.http.get<any[]>('http://localhost:8000/api/jugadores', { withCredentials: true })
@@ -109,7 +124,6 @@ export class Jugadores implements OnInit, OnDestroy {
         error: (err) => console.error('Error cargando jugadores:', err)
       });
   }
-  //Para cargar el jugador en editar
   cargarDatos(jugador: any) {
 
     this.jugadorEditado = { ...jugador };
