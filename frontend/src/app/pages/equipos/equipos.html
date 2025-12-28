@@ -1,0 +1,107 @@
+<app-header></app-header>
+
+<div class="container mt-5 mb-5">
+
+  <h2 class="text-center mb-4">Gestión de Equipos</h2>
+
+  <div class="d-flex justify-content-end mb-3">
+
+    <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modalCrearEquipo">
+      <i class="fas fa-plus"></i> Añadir Equipo
+    </button>
+  </div>
+
+  <div class="card shadow p-4">
+    <div class="table-responsive">
+      <table datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" class="table table-striped table-bordered row-border hover">
+        <thead class="table-dark">
+        <tr>
+          <th>Nombre</th>
+          <th class="text-center">Nº Usos</th>
+          <th class="text-center" style="width: 150px;">Acciones</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let e of equipos">
+          <td class="fw-bold">{{ e.nombre }}</td>
+          <td class="text-center">
+            <span class="badge bg-secondary">{{ e.n_usos || 0 }}</span>
+          </td>
+
+
+          <td class="text-center">
+
+
+            <button class="btn btn-warning btn-md me-2"
+                    data-bs-toggle="modal"
+                    data-bs-target="#modalEditarEquipo"
+                    (click)="cargarDatos(e)">
+              <i class="bi bi-pencil-square"></i>
+            </button>
+
+            <button class="btn btn-danger btn-md"
+                    title="Eliminar"
+                    (click)="eliminarEquipo(e.id)">
+              <i class="bi bi-trash"></i>
+            </button>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ================= CREAR EQUIPO ================= -->
+<div class="modal fade" id="modalCrearEquipo" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-success text-white">
+        <h5 class="modal-title">Nuevo Equipo</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      <div class="modal-body">
+        <form (ngSubmit)="guardarEquipo()">
+          <div class="mb-3">
+            <label class="form-label">Nombre del Equipo</label>
+            <input type="text" class="form-control" [(ngModel)]="nuevoEquipo.nombre" name="nombre" required placeholder="Ej: Sevilla FC">
+          </div>
+        </form>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-success" (click)="guardarEquipo()">Crear</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= EDITAR EQUIPO ================= -->
+<div class="modal fade" id="modalEditarEquipo" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-warning text-dark">
+        <h5 class="modal-title">Editar Equipo</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      <div class="modal-body">
+        <form>
+          <div class="mb-3">
+            <label class="form-label">Nombre del Equipo</label>
+            <input type="text" class="form-control" [(ngModel)]="equipoEditado.nombre" name="editNombre" required>
+          </div>
+        </form>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-warning" (click)="actualizarEquipo()">Guardar Cambios</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<app-footer></app-footer>

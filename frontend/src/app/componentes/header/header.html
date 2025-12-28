@@ -17,7 +17,7 @@
     <a *ngIf="auth.tieneIdNegativo()" routerLink="/jugadores" class="btn-red">Gestionar Jugadores</a>
 
     <a routerLink="/register" class="btn-red">Mis Ligas</a>
-    <a routerLink="/register" class="btn-red">Equipos</a>
+    <a *ngIf="auth.tieneIdNegativo()" routerLink="/equipos" class="btn-red">Gestionar Equipos</a>
     <a routerLink="/register" class="btn-red">Contacte con nosotros</a>
   </div>
 
@@ -30,7 +30,7 @@
       <button *ngIf="estaLogueado()" (click)="logout()" class="btn-red mb-2 w-100">Cerrar Sesión</button>
 
       <a routerLink="/register" class="btn-red mb-2 w-100">Mis Ligas</a>
-      <a routerLink="/register" class="btn-red mb-2 w-100">Equipos</a>
+      <a *ngIf="auth.tieneIdNegativo()" routerLink="/equipos" class="btn-red mb-2 w-100"> Gestionar Equipos</a>
       <a routerLink="/register" class="btn-red mb-2 w-100">Contacte con nosotros</a>
     </div>
   </div>
