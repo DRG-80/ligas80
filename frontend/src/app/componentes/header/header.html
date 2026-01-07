@@ -10,13 +10,16 @@
 
   <div class="nav-buttons d-none d-md-flex gap-2">
     <a routerLink="/" class="btn-red">Inicio</a>
+    <a  *ngIf="estaLogueado() && !auth.tieneIdNegativo() "  routerLink="/" class="btn-red">Mis Ligas</a>
+    <a  *ngIf="estaLogueado() && !auth.tieneIdNegativo() "  routerLink="/" class="btn-red">Mis Equipos</a>
+
 
     <a *ngIf="!estaLogueado()" routerLink="/login" class="btn-red">Iniciar Sesión</a>
 
     <a *ngIf="estaLogueado()" (click)="logout()" class="btn-red">Cerrar Sesión</a>
     <a *ngIf="auth.tieneIdNegativo()" routerLink="/jugadores" class="btn-red">Gestionar Jugadores</a>
 
-    <a routerLink="/register" class="btn-red">Mis Ligas</a>
+    <a *ngIf="auth.tieneIdNegativo()" routerLink="/ligas" class="btn-red">Gestionar Ligas</a>
     <a *ngIf="auth.tieneIdNegativo()" routerLink="/equipos" class="btn-red">Gestionar Equipos</a>
     <a routerLink="/register" class="btn-red">Contacte con nosotros</a>
   </div>
@@ -29,7 +32,7 @@
 
       <button *ngIf="estaLogueado()" (click)="logout()" class="btn-red mb-2 w-100">Cerrar Sesión</button>
 
-      <a routerLink="/register" class="btn-red mb-2 w-100">Mis Ligas</a>
+      <a *ngIf="auth.tieneIdNegativo()" routerLink="/ligas" class="btn-red mb-2 w-100">Gestionar Ligas</a>
       <a *ngIf="auth.tieneIdNegativo()" routerLink="/equipos" class="btn-red mb-2 w-100"> Gestionar Equipos</a>
       <a routerLink="/register" class="btn-red mb-2 w-100">Contacte con nosotros</a>
     </div>
