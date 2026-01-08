@@ -7,8 +7,15 @@ use Illuminate\Http\Request;
 
 class EquipoController extends Controller
 {
-    public function index(){
-        $equipos = Equipo::all();
+    public function index()
+    {
+
+        $equipos = Equipo::join('users', 'equipo.id_usuario', '=', 'users.id')
+            ->select(
+                'equipo.*',
+                'users.name as nombre_creador'
+            )
+            ->get();
 
         return response()->json($equipos);
     }
@@ -61,9 +68,8 @@ class EquipoController extends Controller
     public function misEquipos($id)
     {
 
-        $equipos=Equipo::where('id_creador',$id);
+        $equipos = Equipo::where('equipo.id_usuario', $id)->get();
+
         return response()->json($equipos);
-
-
     }
 }

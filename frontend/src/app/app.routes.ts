@@ -6,12 +6,15 @@ import {Jugadores} from './pages/jugadores/jugadores';
 import {Equipos} from './pages/equipos/equipos';
 import {Ligas} from './pages/ligas/ligas';
 import {adminGuard} from './guards/admin-guard';
+import {EquiposCliente} from './pages/equipos-cliente/equipos-cliente';
 
 
 export const routes: Routes = [
   { path: '', component: Home },
   { path: 'login', component: Login },
   { path: 'register', component: Register },
+  { path: 'equiposCliente', component: EquiposCliente },
+
 
 
   {

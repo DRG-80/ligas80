@@ -1,0 +1,65 @@
+.btn-equipos {
+  color: #FF383C;
+  border: 2px solid #FF383C;
+  background-color: transparent;
+  border-radius: 20px;
+  padding: 8px 16px;
+}
+
+.btn-equipos:hover {
+  background-color: #FF383C;
+  color: white;
+  transition: 0.5s;
+
+}
+
+.btn-nuevoEquipo{
+  color: black;
+  border: 2px solid black;
+  background-color: transparent;
+  border-radius: 20px;
+  padding: 8px 16px;
+}
+
+.btn-nuevoEquipo:hover{
+  background-color: black;
+  color: #c53131;
+  transition: 0.5s;
+}
+.modal-title{
+  color: #c53131;
+
+}
+
+.modal-crear{
+  background-color: black;
+}
+
+.btn-crear{
+  background-color: #c53131;
+  color: white;
+}
+.btn-cancelar{
+
+  background-color: black;
+  color: #c53131;
+}
+
+.main-title,th{
+  color: #c53131;
+}
+
+.bg-usuario{
+  background-color: #c53131;
+  color: white;
+}
+
+.thead-misEquipos th {
+  background-color: #FF383C !important;
+  color: white !important;
+  border-bottom: 2px solid black !important;
+}
+
+td{
+  color: black !important;
+}
