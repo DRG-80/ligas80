@@ -67,9 +67,8 @@ class LigaController extends Controller
 
     public function misLigas($id)
     {
-
-        $liga=Liga::where('id_creador',$id);
-        return response()->json($liga);
+        $ligas = Liga::where('id_usuario', $id)->get();
+        return response()->json($ligas);
 
 
     }

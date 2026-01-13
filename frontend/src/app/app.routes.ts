@@ -7,6 +7,8 @@ import {Equipos} from './pages/equipos/equipos';
 import {Ligas} from './pages/ligas/ligas';
 import {adminGuard} from './guards/admin-guard';
 import {EquiposCliente} from './pages/equipos-cliente/equipos-cliente';
+import {LigasCliente} from './pages/ligas-cliente/ligas-cliente';
+import {LigasJuego} from './pages/ligas-juego/ligas-juego';
 
 
 export const routes: Routes = [
@@ -14,6 +16,8 @@ export const routes: Routes = [
   { path: 'login', component: Login },
   { path: 'register', component: Register },
   { path: 'equiposCliente', component: EquiposCliente },
+  { path: 'ligasCliente', component: LigasCliente },
+  { path: 'ligasJuego/:id', component: LigasJuego },
 
 
 

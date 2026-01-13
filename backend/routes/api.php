@@ -3,6 +3,8 @@
 use App\Http\Controllers\JugadorController;
 use App\Http\Controllers\EquipoController;
 use App\Http\Controllers\LigaController;
+use App\Http\Controllers\LigaEquipoController;
+
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -30,11 +32,15 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::put('/equipos/{id}', [EquipoController::class, 'update'])->name('equipo.update');
 
     // 4. Ligas
-    // He corregido los nombres (name) que tenias copiados de 'equipo'
     Route::get('/ligas', [LigaController::class, 'index'])->name('liga.index');
-    Route::get('/ligas/misLigas', [LigaController::class, 'misLigas'])->name('liga.misLigas');
+    Route::get('/ligas/misLigas/{id}', [LigaController::class, 'misLigas'])->name('liga.misLigas');
     Route::post('/ligas', [LigaController::class, 'store'])->name('liga.store');
     Route::delete('/ligas/{id}', [LigaController::class, 'destroy'])->name('liga.destroy');
     Route::put('/ligas/{id}', [LigaController::class, 'update'])->name('liga.update');
+
+    // 5. Ligas-Equipo
+    Route::get('/ligasEquipo/{id}', [LigaEquipoController::class, 'index'])->name('ligaEquipo.store');
+    Route::post('/ligasEquipo', [LigaEquipoController::class, 'store'])->name('ligaEquipo.store');
+
 
 });

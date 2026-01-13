@@ -10,7 +10,7 @@
 
   <div class="nav-buttons d-none d-md-flex gap-2">
     <a routerLink="/" class="btn-red">Inicio</a>
-    <a  *ngIf="estaLogueado() && !auth.tieneIdNegativo() "  routerLink="/" class="btn-red">Mis Ligas</a>
+    <a  *ngIf="estaLogueado() && !auth.tieneIdNegativo() "  routerLink="/ligasCliente" class="btn-red">Mis Ligas</a>
     <a  *ngIf="estaLogueado() && !auth.tieneIdNegativo() "  routerLink="/equiposCliente" class="btn-red">Mis Equipos</a>
 
 
@@ -31,7 +31,8 @@
       <a *ngIf="!estaLogueado()" routerLink="/login" class="btn-red mb-2 w-100">Iniciar Sesión</a>
 
       <button *ngIf="estaLogueado()" (click)="logout()" class="btn-red mb-2 w-100">Cerrar Sesión</button>
-
+      <a  *ngIf="estaLogueado() && !auth.tieneIdNegativo() "  routerLink="/ligasCliente" class="btn-red mb-2 w-100">Mis Ligas</a>
+      <a  *ngIf="estaLogueado() && !auth.tieneIdNegativo() "  routerLink="/equiposCliente" class="btn-red mb-2 w-100">Mis Equipos</a>
       <a *ngIf="auth.tieneIdNegativo()" routerLink="/ligas" class="btn-red mb-2 w-100">Gestionar Ligas</a>
       <a *ngIf="auth.tieneIdNegativo()" routerLink="/equipos" class="btn-red mb-2 w-100"> Gestionar Equipos</a>
       <a routerLink="/register" class="btn-red mb-2 w-100">Contacte con nosotros</a>
