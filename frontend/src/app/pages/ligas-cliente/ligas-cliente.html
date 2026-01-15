@@ -46,7 +46,7 @@
             </button>
 
 
-            <button class="btn btn-primary btn-sm me-1"
+            <button class="btn btn-primary btn-md me-1"
                     [title]="l.n_equipos < 20 ? 'Faltan equipos (Necesitas 20)' : 'Jugar'"
                     [routerLink]="l.n_equipos >= 20 ? '/ligasJuego/' + l.id : null"
                     [disabled]="l.n_equipos < 20">

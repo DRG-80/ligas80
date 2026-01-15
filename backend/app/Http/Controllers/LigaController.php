@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\LigaEquipo;
 use Illuminate\Http\Request;
 use App\Models\Liga;
 
@@ -72,4 +73,17 @@ class LigaController extends Controller
 
 
     }
+
+    public function perteneceLigaAlUsuario($id_liga,$id_usuario)
+    {
+        $pertenece = Liga::where('id', $id_liga)
+            ->where('id_usuario', $id_usuario)
+            ->exists();
+
+        return $pertenece;
+    }
+
+
+
+
 }

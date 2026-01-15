@@ -39,8 +39,15 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::put('/ligas/{id}', [LigaController::class, 'update'])->name('liga.update');
 
     // 5. Ligas-Equipo
-    Route::get('/ligasEquipo/{id}', [LigaEquipoController::class, 'index'])->name('ligaEquipo.store');
+    Route::get('/ligasEquipo/{id}', [LigaEquipoController::class, 'index'])->name('ligaEquipo.index');
+    Route::get('/ligasEquipo/obtenerEquipoElegido/{id}', [LigaEquipoController::class, 'obtenerEquipoElegido'])->name('ligaEquipo.index');
+    Route::get('/ligasEquipo/hayEquipoElegido/{id}', [LigaEquipoController::class, 'hayEquipoElegido'])->name('ligaEquipo.hayEquipoElegido');
+    Route::get('/ligasEquipo/perteneceLigaAlUsuario/{id_liga}/{id_usuario}', [LigaController::class, 'perteneceLigaAlUsuario'])->name('ligaEquipo.index');
+
     Route::post('/ligasEquipo', [LigaEquipoController::class, 'store'])->name('ligaEquipo.store');
+    Route::post('/ligasEquipo/elegir/{id}', [LigaEquipoController::class, 'elegirEquipo'])->name('ligaEquipo.elegirEquipo');
+
+
 
 
 });

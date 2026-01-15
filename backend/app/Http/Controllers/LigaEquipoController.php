@@ -11,18 +11,15 @@ class LigaEquipoController extends Controller
 {
     public function index($id)
     {
-
-        $ligas = LigaEquipo::where('id_liga', $id)
-
+        $equiposDisponibles = LigaEquipo::where('id_liga', $id)
             ->join('equipo', 'liga_equipos.id_equipo', '=', 'equipo.id')
             ->select(
                 'liga_equipos.*',
-                'equipo.nombre as nombre_equipo',
-                'equipo.n_usos'
+                'equipo.nombre as nombre_equipo'
             )
             ->get();
 
-        return response()->json($ligas);
+        return response()->json($equiposDisponibles);
     }
 
     public function store(Request $request)
@@ -86,6 +83,59 @@ class LigaEquipoController extends Controller
             'data' => $guardados
         ]);
     }
+
+    public function hayEquipoElegido($idLiga)
+    {
+
+        $existe = LigaEquipo::where('id_liga', $idLiga)
+            ->where('elegido', 1)
+            ->exists();
+
+        return $existe;
+    }
+
+    public function obtenerEquipoElegido($id_liga)
+    {
+        $equipo = LigaEquipo::where('id_liga', $id_liga)
+            ->where('elegido', 1)
+
+            ->join('equipo', 'liga_equipos.id_equipo', '=', 'equipo.id')
+
+            ->select(
+                'liga_equipos.id_equipo',
+                'equipo.nombre as nombre_equipo'
+            )
+            ->first();
+
+        return response()->json($equipo);
+    }
+
+    public function elegirEquipo(Request $request, $idLiga)
+    {
+        $request->validate([
+            'id_equipo' => 'required|integer'
+        ]);
+
+
+        $eleccion = LigaEquipo::where('id_liga', $idLiga)
+            ->where('id_equipo', $request->id_equipo)
+            ->firstOrFail();
+
+
+        if ($eleccion->elegido == 1) {
+            return response()->json(['message' => 'Este equipo ya ha sido elegido por otro usuario'], 409);
+        }
+
+
+        $eleccion->elegido = 1;
+
+
+
+        $eleccion->save();
+
+        return response()->json(['message' => 'Equipo elegido correctamente', 'data' => $eleccion]);
+    }
+
 }
 
 

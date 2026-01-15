@@ -1,1 +1,105 @@
-<p>ligas-juego works!</p>
+<app-header></app-header>
+
+<div class="container mt-5 mb-5" style="min-height: 60vh;">
+
+
+  <!-- NO TIENE EQUIPO ELEGIDO   -->
+
+  <div *ngIf="pertenencia && !elegido" class="animate__animated animate__fadeIn">
+
+    <div class="text-center mb-4">
+      <h2 class="fw-bold">Elige tu Equipo</h2>
+      <p class="text-muted">Selecciona con qué equipo quieres competir en esta liga.</p>
+    </div>
+
+    <div class="card shadow p-4 border-0">
+      <div class="table-responsive">
+
+        <table datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" class="table table-striped table-hover w-100 tabla-mis-equipos">
+          <thead class="thead-corporativo">
+          <tr>
+            <th>Nombre del Equipo</th>
+            <th class="text-center" style="width: 150px;">Acción</th>
+          </tr>
+          </thead>
+          <tbody>
+
+          <tr *ngFor="let e of equiposDisponibles">
+            <td class="fw-bold">{{ e.nombre_equipo }}</td>
+            <td class="text-center">
+              <button class="btn btn-nuevoEquipo btn-sm" (click)="elegirEquipo(e.id_equipo)">
+                Elegir
+              </button>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+
+  <!--  YA TIENE EQUIPO            -->
+  <div *ngIf="pertenencia && elegido" class="dashboard-juego animate__animated animate__fadeInUp">
+
+
+    <div class="text-center mb-5 mt-3">
+      <h6 class="text-uppercase text-muted ls-2">Entrenando a</h6>
+      <h1 class="display-3 fw-bold text-uppercase equipo-titulo">
+        {{ miEquipo?.nombre_equipo || 'MI EQUIPO' }}
+      </h1>
+      <div class="divider-rojo mx-auto"></div>
+    </div>
+
+    <div class="row justify-content-center g-4">
+
+      <!-- 1. Fichar -->
+      <div class="col-md-6 col-lg-3">
+        <button class="btn-menu-juego w-100 shadow-sm" routerLink="mercado">
+          <div class="icon-box mb-3">
+            <i class="bi bi-cash-coin"></i>
+          </div>
+          <span class="titulo">Fichar</span>
+          <span class="subtitulo">Mercado de Jugadores</span>
+        </button>
+      </div>
+
+      <!-- 2. Gestionar Jugadores -->
+      <div class="col-md-6 col-lg-3">
+        <button class="btn-menu-juego w-100 shadow-sm" routerLink="plantilla">
+          <div class="icon-box mb-3">
+            <i class="bi bi-people-fill"></i>
+          </div>
+          <span class="titulo">Plantilla</span>
+          <span class="subtitulo">Gestionar Jugadores</span>
+        </button>
+      </div>
+
+      <!-- 3. Empezar/Continuar  -->
+      <div class="col-md-6 col-lg-3">
+        <button class="btn-menu-juego btn-jugar w-100 shadow-sm" routerLink="partido">
+          <div class="icon-box mb-3">
+            <i class="bi bi-play-circle-fill"></i>
+          </div>
+          <span class="titulo">Jugar</span>
+          <span class="subtitulo">Ir a la Jornada</span>
+        </button>
+      </div>
+
+      <!-- 4. Clasificación -->
+      <div class="col-md-6 col-lg-3">
+        <button class="btn-menu-juego w-100 shadow-sm" routerLink="clasificacion">
+          <div class="icon-box mb-3">
+            <i class="bi bi-trophy-fill"></i>
+          </div>
+          <span class="titulo">Clasificación</span>
+          <span class="subtitulo">Ver Tabla</span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<app-footer></app-footer>

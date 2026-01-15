@@ -1,0 +1,86 @@
+.equipo-titulo {
+  color: #FF383C;
+  text-shadow: 2px 2px 0px #000;
+  letter-spacing: -1px;
+}
+
+.divider-rojo {
+  height: 4px;
+  width: 100px;
+  background-color: black;
+  margin-top: 10px;
+  border-radius: 2px;
+}
+
+
+.btn-menu-juego {
+  background-color: white;
+  border: 2px solid #eee;
+  border-radius: 15px;
+  padding: 2rem 1rem;
+  transition: all 0.3s ease;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  color: black;
+}
+
+.btn-menu-juego .icon-box {
+  font-size: 3rem;
+  color: #333;
+  transition: 0.3s;
+}
+
+.btn-menu-juego .titulo {
+  font-size: 1.5rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.btn-menu-juego .subtitulo {
+  font-size: 0.9rem;
+  color: #888;
+  margin-top: 5px;
+}
+
+
+.btn-menu-juego:hover {
+  transform: translateY(-5px);
+  border-color: black;
+  background-color: black;
+}
+
+.btn-menu-juego:hover .titulo,
+.btn-menu-juego:hover .icon-box {
+  color: #FF383C;
+}
+
+.btn-menu-juego:hover .subtitulo {
+  color: #aaa;
+}
+
+.btn-menu-juego.btn-jugar {
+  border-color: #FF383C;
+  background-color: #fff0f0;
+}
+
+.btn-menu-juego.btn-jugar .icon-box {
+  color: #FF383C;
+}
+
+.btn-menu-juego.btn-jugar:hover {
+  background-color: #FF383C;
+  border-color: #FF383C;
+}
+
+.btn-menu-juego.btn-jugar:hover .titulo,
+.btn-menu-juego.btn-jugar:hover .icon-box {
+  color: white;
+}
+
+.btn-menu-juego.btn-jugar:hover .subtitulo {
+  color: #ffdce0;
+}
