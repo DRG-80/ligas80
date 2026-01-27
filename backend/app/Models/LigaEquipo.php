@@ -7,16 +7,19 @@ use Illuminate\Database\Eloquent\Model;
 
 class LigaEquipo extends Model
 {
-
     protected $table = 'liga_equipos';
-
 
     protected $fillable = [
         'id_liga',
-        'id_liga',
+        'id_equipo',
         'elegido',
         'media',
         'presupuesto',
+        'alineacion',
+    ];
 
+    // 👇 ¡ESTO ES LO QUE TE FALTA! 👇
+    protected $casts = [
+        'alineacion' => 'array',
     ];
 }

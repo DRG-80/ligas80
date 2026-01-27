@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Jugador;
+use App\Models\JugadoresEquipo;
 use App\Models\Liga;
 use Illuminate\Http\Request;
 use App\Models\LigaEquipo;
@@ -110,6 +112,20 @@ class LigaEquipoController extends Controller
         return response()->json($equipo);
     }
 
+    public function obtenerPresupuesto($idLiga, $idEquipo)
+    {
+
+        $inscripcion = LigaEquipo::where('id_liga', $idLiga)
+            ->where('id_equipo', $idEquipo)
+            ->select('presupuesto')
+            ->firstOrFail();
+
+
+        return response()->json([
+            'presupuesto' => $inscripcion->presupuesto
+        ]);
+    }
+
     public function elegirEquipo(Request $request, $idLiga)
     {
         $request->validate([
@@ -134,6 +150,94 @@ class LigaEquipoController extends Controller
         $eleccion->save();
 
         return response()->json(['message' => 'Equipo elegido correctamente', 'data' => $eleccion]);
+    }
+
+    public function guardarAlineacion(Request $request)
+    {
+
+        $inscripcion = LigaEquipo::where('id_liga', $request->id_liga)
+            ->where('id_equipo', $request->id_equipo)
+            ->firstOrFail();
+
+
+
+        $titulares = array_merge(
+            $request->portero ?? [],
+            $request->defensas ?? [],
+            $request->medios ?? [],
+            $request->delanteros ?? []
+        );
+
+
+        $valoresMedia = array_column($titulares, 'media');
+
+
+        $sumaTotal = array_sum($valoresMedia);
+
+
+        $mediaCalculada = count($valoresMedia) > 0 ? round($sumaTotal / 11, 2) : 0;
+
+        $alineacion = [
+            'portero'    => $request->portero,
+            'defensas'   => $request->defensas,
+            'medios'     => $request->medios,
+            'delanteros' => $request->delanteros,
+
+        ];
+
+
+
+
+        $inscripcion->alineacion = $alineacion;
+        $inscripcion->media=$mediaCalculada;
+
+
+        $inscripcion->update();
+
+        return response()->json(['message' => 'Alineación guardada correctamente']);
+    }
+
+    public function obtenerAlineacion($idLiga, $idEquipo)
+    {
+
+        $inscripcion = LigaEquipo::where('id_liga', $idLiga)
+            ->where('id_equipo', $idEquipo)
+            ->first();
+
+
+        $datosGuardados = ($inscripcion && !empty($inscripcion->alineacion))
+            ? $inscripcion->alineacion
+            : [];
+
+
+
+        $porteroIds    = array_column($datosGuardados['portero'] ?? [], 'id');
+        $defensasIds   = array_column($datosGuardados['defensas'] ?? [], 'id');
+        $mediosIds     = array_column($datosGuardados['medios'] ?? [], 'id');
+        $delanterosIds = array_column($datosGuardados['delanteros'] ?? [], 'id');
+
+        $todosMisJugadores = JugadoresEquipo::where('id_liga', $idLiga)
+            ->where('id_equipo', $idEquipo)
+            ->pluck('id_jugador')
+            ->toArray();
+
+
+        $titularesIds = array_merge($porteroIds, $defensasIds, $mediosIds, $delanterosIds);
+
+
+        $idsBanquilloReal = array_diff($todosMisJugadores, $titularesIds);
+
+
+
+        return response()->json([
+            'portero'    => Jugador::whereIn('id', $porteroIds)->whereIn('id', $todosMisJugadores)->get(),
+            'defensas'   => Jugador::whereIn('id', $defensasIds)->whereIn('id', $todosMisJugadores)->get(),
+            'medios'     => Jugador::whereIn('id', $mediosIds)->whereIn('id', $todosMisJugadores)->get(),
+            'delanteros' => Jugador::whereIn('id', $delanterosIds)->whereIn('id', $todosMisJugadores)->get(),
+
+
+            'banquillo'  => Jugador::whereIn('id', array_values($idsBanquilloReal))->get(),
+        ]);
     }
 
 }

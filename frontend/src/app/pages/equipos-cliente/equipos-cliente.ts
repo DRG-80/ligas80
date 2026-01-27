@@ -23,6 +23,7 @@ export class EquiposCliente {
   equipos: any[] = [];
   misEquipos:any[]=[];
   misEquiposEstado=false;
+  public cargando: boolean = true;
 
 
   nuevoEquipo = {
@@ -88,46 +89,65 @@ export class EquiposCliente {
 
   cargarEquipos() {
 
+    this.cargando = true;
+
     this.http.get<any[]>('http://localhost:8000/api/equipos', { withCredentials: true })
       .subscribe({
         next: (res) => {
           this.equipos = res;
 
+          // --- NUEVO: APAGAR SPINNER ---
+          this.cargando = false;
+
           if (!this.dtTrigger.closed) {
             this.dtTrigger.next(null);
           }
         },
-        error: (err) => console.error('Error cargando equipos:', err)
+        error: (err) => {
+          console.error('Error cargando equipos:', err);
+          // --- NUEVO: APAGAR SPINNER SI FALLA ---
+          this.cargando = false;
+        }
       });
   }
 
   getMisEquipos() {
-
     const usuario = this.auth.usuarioActual();
 
     if (usuario && usuario.id) {
+
+
+      this.cargando = true;
 
       this.http.get<any[]>(`http://localhost:8000/api/equipos/misEquipos/${usuario.id}`, { withCredentials: true })
         .subscribe({
           next: (res) => {
             this.misEquipos = res;
 
+
+            this.cargando = false;
+
             if (!this.dtTrigger.closed) {
               this.dtTrigger.next(null);
             }
           },
-          error: (err) => console.error('Error cargando equipos del usuario:', err)
+          error: (err) => {
+            console.error('Error cargando equipos del usuario:', err);
+
+            this.cargando = false;
+          }
         });
     } else {
-      console.error('No hay usuario logueado o no tiene ID');
+      console.error('No hay usuario logueado');
+      this.cargando = false;
     }
   }
 
   alternarVista() {
     this.misEquiposEstado = !this.misEquiposEstado;
-
-
     this.dtTrigger = new Subject();
+
+    this.cargando = true;
 
     if (this.misEquiposEstado) {
       this.getMisEquipos();

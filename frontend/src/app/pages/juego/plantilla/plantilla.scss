@@ -1,0 +1,194 @@
+
+.campo-futbol {
+
+  background:
+    linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.1)),
+    repeating-linear-gradient(
+        0deg,
+        #2e7d32 0px,
+        #2e7d32 40px,
+        #388e3c 40px,
+        #388e3c 80px
+    );
+  border: 5px solid white;
+  border-radius: 8px;
+  height: 600px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  padding: 10px;
+  position: relative;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+  overflow: hidden;
+}
+
+
+.campo-futbol::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 120px;
+  height: 120px;
+  border: 3px solid rgba(255,255,255,0.4);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+
+.campo-futbol::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: rgba(255,255,255,0.4);
+  pointer-events: none;
+}
+
+
+.linea-campo {
+  z-index: 2;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 90px;
+}
+
+.zona-drop {
+  display: flex;
+  gap: 15px;
+  min-width: 200px;
+  min-height: 80px;
+  justify-content: center;
+  align-items: center;
+  padding: 5px;
+  border-radius: 10px;
+  transition: background 0.3s;
+}
+
+
+.cdk-drop-list-dragging .zona-drop:hover {
+  background: rgba(255,255,255,0.2);
+}
+
+
+.placeholder-text {
+  color: rgba(255,255,255,0.7);
+  font-weight: 800;
+  text-transform: uppercase;
+  border: 2px dashed rgba(255,255,255,0.5);
+  padding: 8px 20px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  user-select: none;
+}
+
+
+.ficha-jugador {
+  width: 80px;
+  background: white;
+  border-radius: 6px;
+  text-align: center;
+  padding: 4px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+  cursor: grab;
+  z-index: 10;
+  transition: transform 0.2s;
+  border: 1px solid #ddd;
+}
+
+.ficha-jugador:hover { transform: scale(1.1); z-index: 20; }
+.ficha-jugador:active { cursor: grabbing; }
+
+.ficha-jugador .media {
+  display: block;
+  font-weight: 800;
+  font-size: 0.85rem;
+  border-radius: 4px;
+  margin-bottom: 3px;
+  color: white;
+  padding: 2px 0;
+}
+
+.ficha-jugador .nombre {
+  font-size: 0.7rem;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: #333;
+  text-transform: uppercase;
+}
+
+.ficha-jugador.portero .media { color: #333; }
+
+.banquillo-container {
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.lista-banquillo { min-height: 150px; }
+
+.player-card {
+  cursor: grab;
+  transition: all 0.2s ease;
+  border: 1px solid #eee;
+}
+
+.player-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1) !important;
+  border: 1px solid #2e7d32 !important;
+}
+
+.cdk-drag-preview {
+  box-sizing: border-box;
+  border-radius: 8px;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+  z-index: 1000 !important;
+  opacity: 0.9;
+}
+
+.cdk-drag-placeholder {
+  opacity: 0.3;
+  background: #ccc;
+  border: 2px dashed #666;
+  border-radius: 8px;
+}
+
+.cdk-drag-animating { transition: transform 250ms cubic-bezier(0, 0, 0.2, 1); }
+
+.zona-drop.cdk-drop-list-dragging .ficha-jugador:not(.cdk-drag-placeholder),
+.lista-banquillo.cdk-drop-list-dragging .col-6:not(.cdk-drag-placeholder) {
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+
+.lista-banquillo {
+  min-height: 200px !important; /* Altura mínima forzada */
+  border: 2px dashed transparent;
+  transition: border 0.3s;
+}
+
+
+.cdk-drop-list-dragging .lista-banquillo {
+  border-color: #ccc;
+  background-color: #f1f1f1;
+}
+
+
+.empty-bench-message {
+  border: 2px dashed #ddd;
+  border-radius: 10px;
+  background-color: rgba(0,0,0,0.02);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  min-height: 150px;
+}

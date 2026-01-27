@@ -4,6 +4,7 @@ use App\Http\Controllers\JugadorController;
 use App\Http\Controllers\EquipoController;
 use App\Http\Controllers\LigaController;
 use App\Http\Controllers\LigaEquipoController;
+use App\Http\Controllers\JugadoresEquipoController;
 
 
 use Illuminate\Http\Request;
@@ -41,11 +42,22 @@ Route::middleware(['auth:sanctum'])->group(function () {
     // 5. Ligas-Equipo
     Route::get('/ligasEquipo/{id}', [LigaEquipoController::class, 'index'])->name('ligaEquipo.index');
     Route::get('/ligasEquipo/obtenerEquipoElegido/{id}', [LigaEquipoController::class, 'obtenerEquipoElegido'])->name('ligaEquipo.index');
+    Route::get('/ligasEquipo/obtenerPresupuesto/{id_liga}/{id_equipo}', [LigaEquipoController::class, 'obtenerPresupuesto'])->name('ligaEquipo.index');
+    Route::get('/ligasEquipo/obtenerAlineacion/{id_liga}/{id_equipo}', [LigaEquipoController::class, 'obtenerAlineacion'])->name('ligaEquipo.index');
+
+
     Route::get('/ligasEquipo/hayEquipoElegido/{id}', [LigaEquipoController::class, 'hayEquipoElegido'])->name('ligaEquipo.hayEquipoElegido');
     Route::get('/ligasEquipo/perteneceLigaAlUsuario/{id_liga}/{id_usuario}', [LigaController::class, 'perteneceLigaAlUsuario'])->name('ligaEquipo.index');
 
     Route::post('/ligasEquipo', [LigaEquipoController::class, 'store'])->name('ligaEquipo.store');
     Route::post('/ligasEquipo/elegir/{id}', [LigaEquipoController::class, 'elegirEquipo'])->name('ligaEquipo.elegirEquipo');
+    Route::put('/ligasEquipo/guardarAlineacion', [LigaEquipoController::class, 'guardarAlineacion'])->name('ligaEquipo.elegirEquipo');
+
+
+    // 6. Jugadores-Equipo
+    Route::get('/jugadoresEquipo/{id}', [JugadoresEquipoController::class, 'index'])->name('ligaEquipo.index');
+    Route::get('/jugadoresEquipo/misJugadores/{idLiga}/{idEquipo}', [JugadoresEquipoController::class, 'obtenerMisJugadores'])->name('ligaEquipo.index');
+    Route::post('/jugadoresEquipo', [JugadoresEquipoController::class, 'store'])->name('ligaEquipo.store');
 
 
 

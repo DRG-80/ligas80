@@ -9,6 +9,8 @@ import {adminGuard} from './guards/admin-guard';
 import {EquiposCliente} from './pages/equipos-cliente/equipos-cliente';
 import {LigasCliente} from './pages/ligas-cliente/ligas-cliente';
 import {LigasJuego} from './pages/ligas-juego/ligas-juego';
+import {Fichajes} from './pages/juego/fichajes/fichajes';
+import {Plantilla} from './pages/juego/plantilla/plantilla';
 
 
 export const routes: Routes = [
@@ -18,6 +20,9 @@ export const routes: Routes = [
   { path: 'equiposCliente', component: EquiposCliente },
   { path: 'ligasCliente', component: LigasCliente },
   { path: 'ligasJuego/:id', component: LigasJuego },
+  { path: 'fichajes/:idLiga/:idEquipo', component: Fichajes },
+  { path: 'plantilla/:idLiga/:idEquipo', component: Plantilla },
+
 
 
 
