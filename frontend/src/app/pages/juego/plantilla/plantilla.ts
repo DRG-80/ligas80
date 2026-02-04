@@ -24,8 +24,9 @@ export class Plantilla implements OnInit{
   portero: any[] = [];    // Máx 1
   defensas: any[] = [];   // Máx 4
   medios: any[] = [];     // Máx 3
-  delanteros: any[] = []; // Máx 3
+  delanteros: any[] = [];
   banquillo: any[] = [];
+  public cargando: boolean = true;
 
 
   dtOptions: Config = {};
@@ -120,7 +121,8 @@ export class Plantilla implements OnInit{
   }
 
   cargarMisJugadores(idLiga: number, idEquipo: number) {
-    // Llamamos al endpoint inteligente que ya nos da la alineación + banquillo actualizado
+    this.cargando = true;
+
     this.http.get<any>(`http://localhost:8000/api/ligasEquipo/obtenerAlineacion/${idLiga}/${idEquipo}`, { withCredentials: true })
       .subscribe({
         next: (alineacion) => {
@@ -134,6 +136,7 @@ export class Plantilla implements OnInit{
           console.log(alineacion);
 
           console.log('✅ Alineación y plantilla sincronizadas');
+          this.cargando = false;
         },
         error: (err) => {
           console.error('Error al cargar la plantilla:', err);

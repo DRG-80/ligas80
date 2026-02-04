@@ -77,7 +77,7 @@
 
       <!-- 3. Empezar/Continuar  -->
       <div class="col-md-6 col-lg-3">
-        <button class="btn-menu-juego btn-jugar w-100 shadow-sm" routerLink="partido">
+        <button class="btn-menu-juego btn-jugar w-100 shadow-sm" [routerLink]="['/jugar', idLiga,miEquipo.id_equipo]">
           <div class="icon-box mb-3">
             <i class="bi bi-play-circle-fill"></i>
           </div>

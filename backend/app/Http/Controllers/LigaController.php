@@ -83,6 +83,16 @@ class LigaController extends Controller
         return $pertenece;
     }
 
+    public function obtenerDatosLiga($idLiga)
+    {
+        $datos = Liga::where('id', $idLiga)
+
+            ->select('iniciada', 'enfrentamientos', 'jornada', 'posiciones','resultados')
+            ->first();
+
+        return response()->json($datos);
+    }
+
 
 
 

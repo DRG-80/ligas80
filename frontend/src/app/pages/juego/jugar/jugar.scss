@@ -1,0 +1,85 @@
+
+.titulo-rojo {
+  color: #FF383C;
+  text-shadow: 2px 2px 0px rgba(0,0,0,0.1);
+}
+
+.divider-negro {
+  height: 4px;
+  width: 80px;
+  background-color: black;
+  border-radius: 2px;
+}
+
+
+.card-setup {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border-radius: 15px;
+}
+
+.card-setup:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
+}
+
+.icon-circle {
+  width: 70px;
+  height: 70px;
+  background-color: #f8f9fa;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  color: #FF383C;
+  border: 2px solid #eee;
+}
+
+
+.btn-setup {
+  color: black;
+  border: 2px solid black;
+  background-color: transparent;
+  border-radius: 50px;
+  padding: 10px 20px;
+  font-weight: 700;
+  transition: 0.4s;
+}
+
+.btn-setup:hover:not(:disabled) {
+  background-color: black;
+  color: #FF383C;
+  transform: scale(1.02);
+}
+
+.btn-setup:disabled {
+  border-color: #e0e0e0;
+  color: #aaa;
+  cursor: not-allowed;
+  background-color: #f9f9f9;
+}
+
+
+.btn-iniciar-liga {
+  background-color: #FF383C;
+  color: white;
+  border: none;
+  border-radius: 50px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  transition: all 0.3s ease;
+}
+
+.btn-iniciar-liga:hover:not(:disabled) {
+  background-color: black;
+  color: #FF383C;
+  transform: scale(1.05);
+  box-shadow: 0 5px 15px rgba(255, 56, 60, 0.4);
+}
+
+.btn-iniciar-liga:disabled {
+  background-color: #e9ecef;
+  color: #adb5bd;
+  cursor: not-allowed;
+  box-shadow: none;
+}

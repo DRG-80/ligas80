@@ -11,6 +11,7 @@ import {LigasCliente} from './pages/ligas-cliente/ligas-cliente';
 import {LigasJuego} from './pages/ligas-juego/ligas-juego';
 import {Fichajes} from './pages/juego/fichajes/fichajes';
 import {Plantilla} from './pages/juego/plantilla/plantilla';
+import {Jugar} from './pages/juego/jugar/jugar';
 
 
 export const routes: Routes = [
@@ -22,6 +23,8 @@ export const routes: Routes = [
   { path: 'ligasJuego/:id', component: LigasJuego },
   { path: 'fichajes/:idLiga/:idEquipo', component: Fichajes },
   { path: 'plantilla/:idLiga/:idEquipo', component: Plantilla },
+  { path: 'jugar/:idLiga/:idEquipo', component: Jugar },
+
 
 
 

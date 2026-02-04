@@ -240,6 +240,151 @@ class LigaEquipoController extends Controller
         ]);
     }
 
+    public function obtenerAlineaciones($idLiga)
+    {
+
+        $alineaciones = LigaEquipo::where('id_liga', $idLiga)
+            ->select('id_equipo', 'alineacion')
+            ->get();
+
+
+        $alineaciones->transform(function ($equipo) {
+            if (!empty($equipo->alineacion) && is_string($equipo->alineacion)) {
+                $equipo->alineacion = json_decode($equipo->alineacion);
+            }
+
+
+            if (empty($equipo->alineacion)) {
+                $equipo->alineacion = null;
+            }
+
+            return $equipo;
+        });
+
+        return response()->json($alineaciones);
+    }
+
+    public function simularFichajes(Request $request) {
+
+        set_time_limit(1200);
+        $request->validate([
+            'id_liga' => 'required|exists:liga,id'
+        ]);
+
+        $idLiga = $request->id_liga;
+
+
+        $equipos = LigaEquipo::where('id_liga', $idLiga)
+            ->whereNull('alineacion')
+            ->get();
+
+
+        $jugadoresLibres = Jugador::whereNotIn('id', function($query) use ($idLiga) {
+            $query->select('id_jugador')
+                ->from('jugadores_equipo')
+                ->where('id_liga', $idLiga);
+        })->get();
+
+
+        $esquema = [
+            'POR' => 1,
+            'DEF' => 4,
+            'MC'  => 3,
+            'DEL' => 3
+        ];
+
+        foreach ($equipos as $equipo) {
+
+
+            foreach ($esquema as $posicionBuscada => $cantidadNecesaria) {
+
+                $fichadosEnPosicion = 0;
+
+
+
+                while ($fichadosEnPosicion < $cantidadNecesaria) {
+
+
+
+
+
+                    $candidatos = $jugadoresLibres->filter(function ($j) use ($posicionBuscada, $equipo) {
+
+                        return trim($j->posicion) === $posicionBuscada && $j->precio <= $equipo->presupuesto && ($equipo->presupuesto-$j->precio)!=0;
+                    });
+
+                    if ($candidatos->isEmpty()) {
+
+                        break;
+                    }
+
+
+                    $indiceAleatorio = $candidatos->keys()->random();
+                    $jugador = $jugadoresLibres[$indiceAleatorio];
+
+
+                    $nuevoFichaje = new JugadoresEquipo();
+                    $nuevoFichaje->id_liga = $idLiga;
+                    $nuevoFichaje->id_jugador = $jugador->id;
+                    $nuevoFichaje->id_equipo = $equipo->id_equipo;
+                    $nuevoFichaje->clausula = $jugador->precio * 2;
+                    $nuevoFichaje->save();
+
+
+                    $equipo->presupuesto -= $jugador->precio;
+                    $equipo->save();
+
+
+                    $fichadosEnPosicion++;
+
+
+                    $jugadoresLibres->forget($indiceAleatorio);
+                }
+            }
+
+
+            $plantilla = JugadoresEquipo::where('id_equipo', $equipo->id_equipo)
+                ->where('id_liga', $idLiga)
+                ->join('jugador', 'jugadores_equipo.id_jugador', '=', 'jugador.id')
+                ->select('jugador.id', 'jugador.posicion', 'jugador.media')
+                ->orderBy('jugador.media', 'desc')
+                ->get();
+
+            $alineacion = [
+                'portero' => [], 'defensas' => [], 'medios' => [], 'delanteros' => [], 'banquillo' => []
+            ];
+
+
+            foreach ($plantilla as $j) {
+                if ($j->posicion == 'POR') {
+                    $alineacion['portero'][] = $j->id;
+                }
+                elseif ($j->posicion == 'DEF') {
+                    $alineacion['defensas'][] = $j->id;
+                }
+                elseif ($j->posicion == 'MC') {
+                    $alineacion['medios'][] = $j->id;
+                }
+                elseif ($j->posicion == 'DEL') {
+                    $alineacion['delanteros'][] = $j->id;
+                }
+                else {
+                    $alineacion['banquillo'][] = $j->id;
+                }
+            }
+
+
+            $mediaEquipo = $plantilla->count() > 0 ? round($plantilla->avg('media'), 2) : 0;
+
+
+            $equipo->alineacion = $alineacion;
+            $equipo->media = $mediaEquipo;
+            $equipo->save();
+        }
+
+        return response()->json(['message' => 'Simulación completada con éxito']);
+    }
+
 }
 
 

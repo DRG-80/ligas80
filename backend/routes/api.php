@@ -35,6 +35,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     // 4. Ligas
     Route::get('/ligas', [LigaController::class, 'index'])->name('liga.index');
     Route::get('/ligas/misLigas/{id}', [LigaController::class, 'misLigas'])->name('liga.misLigas');
+    Route::get('/ligas/obtenerDatosLiga/{id}', [LigaController::class, 'obtenerDatosLiga'])->name('liga.misLigas');
     Route::post('/ligas', [LigaController::class, 'store'])->name('liga.store');
     Route::delete('/ligas/{id}', [LigaController::class, 'destroy'])->name('liga.destroy');
     Route::put('/ligas/{id}', [LigaController::class, 'update'])->name('liga.update');
@@ -48,10 +49,13 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
     Route::get('/ligasEquipo/hayEquipoElegido/{id}', [LigaEquipoController::class, 'hayEquipoElegido'])->name('ligaEquipo.hayEquipoElegido');
     Route::get('/ligasEquipo/perteneceLigaAlUsuario/{id_liga}/{id_usuario}', [LigaController::class, 'perteneceLigaAlUsuario'])->name('ligaEquipo.index');
+    Route::get('/ligasEquipo/obtenerAlineaciones/{id}', [LigaEquipoController::class, 'obtenerAlineaciones'])->name('ligaEquipo.index');
+
 
     Route::post('/ligasEquipo', [LigaEquipoController::class, 'store'])->name('ligaEquipo.store');
     Route::post('/ligasEquipo/elegir/{id}', [LigaEquipoController::class, 'elegirEquipo'])->name('ligaEquipo.elegirEquipo');
     Route::put('/ligasEquipo/guardarAlineacion', [LigaEquipoController::class, 'guardarAlineacion'])->name('ligaEquipo.elegirEquipo');
+    Route::put('/ligasEquipo/simularFichajes', [LigaEquipoController::class, 'simularFichajes'])->name('ligaEquipo.elegirEquipo');
 
 
     // 6. Jugadores-Equipo
