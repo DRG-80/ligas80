@@ -130,8 +130,44 @@ export class Jugar {
       });
   }
 
-  iniciarLiga(){
+  iniciarLiga() {
+    // 1. Confirmación de seguridad
+    Swal.fire({
+      title: '¿Iniciar la Liga?',
+      text: "Una vez iniciada, comenzará la competición oficial.",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6', // O tu rojo #FF383C
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Sí, ¡que empiece!',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
 
+      if (result.isConfirmed) {
+
+        // 2. Petición PUT al servidor
+        // Enviamos { iniciada: true } en el cuerpo, aunque el backend podría ponerlo a true solo con recibir la petición.
+        const payload = { iniciada: true };
+
+        this.http.put(`http://localhost:8000/api/ligas/iniciar/${this.idLiga}`, payload, { withCredentials: true })
+          .subscribe({
+            next: () => {
+              Swal.fire(
+                '¡Liga Iniciada!',
+                'La competición ha comenzado.',
+                'success'
+              ).then(() => {
+                // 3. Recargamos para que la vista cambie (y desaparezca la pretemporada)
+                window.location.reload();
+              });
+            },
+            error: (err) => {
+              console.error('Error al iniciar liga:', err);
+              Swal.fire('Error', 'No se pudo iniciar la liga.', 'error');
+            }
+          });
+      }
+    });
   }
 
   simularFichajes() {
@@ -197,8 +233,58 @@ export class Jugar {
     });
   }
 
-  generarEnfrentamientos(){
+  generarEnfrentamientos() {
 
+    Swal.fire({
+      title: '¿Generar Calendario?',
+      text: "Se crearán los enfrentamientos de ida y vuelta para todos los equipos.",
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Sí, generar',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+
+      if (result.isConfirmed) {
+
+
+        Swal.fire({
+          title: 'Generando cruces...',
+          text: 'Por favor, espera.',
+          allowOutsideClick: false,
+          didOpen: () => {
+            Swal.showLoading();
+          }
+        });
+
+
+        this.http.put(`http://localhost:8000/api/ligas/generarCalendario/${this.idLiga}`, {}, { withCredentials: true })
+          .subscribe({
+            next: (res: any) => {
+
+
+              Swal.fire({
+                icon: 'success',
+                title: '¡Calendario Listo!',
+                text: 'Los enfrentamientos se han generado correctamente.',
+                confirmButtonColor: '#FF383C'
+              });
+
+
+              this.enfrentamientos = true;
+            },
+            error: (err) => {
+              console.error('Error generando calendario:', err);
+              Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: err.error?.message || 'No se pudo generar el calendario.',
+              });
+            }
+          });
+      }
+    });
   }
 
 
