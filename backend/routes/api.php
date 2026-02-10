@@ -40,6 +40,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::delete('/ligas/{id}', [LigaController::class, 'destroy'])->name('liga.destroy');
     Route::put('/ligas/{id}', [LigaController::class, 'update'])->name('liga.update');
     Route::put('/ligas/generarCalendario/{id}', [LigaController::class, 'generarCalendario'])->name('liga.update');
+    Route::put('/ligas/iniciar/{id}', [LigaController::class, 'iniciarLiga'])->name('liga.update');
+
 
 
     // 5. Ligas-Equipo

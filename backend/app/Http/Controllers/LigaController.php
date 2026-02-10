@@ -169,8 +169,20 @@ class LigaController extends Controller
 
         $liga->enfrentamientos=$jsonEncuentros;
         $liga->save();
-        /*$liga->iniciada=1;
+
+
+
+
+
+    }
+
+    public function iniciarLiga($idLiga)
+    {
+
+        $liga = Liga::findOrFail($idLiga);
+        $liga->iniciada=1;
         $liga->jornada=1;
+        $liga->save();
 
 
         $equiposUso = Equipo::whereIn('id', function($query) use ($idLiga) {
@@ -179,9 +191,7 @@ class LigaController extends Controller
                 ->where('id_liga', $idLiga);
         })->get();
 
-        Equipo::whereIn('id', $equiposUso->pluck('id'))->increment('n_usos');*/
-
-
+        Equipo::whereIn('id', $equiposUso->pluck('id'))->increment('n_usos');
 
 
     }

@@ -131,7 +131,7 @@ export class Jugar {
   }
 
   iniciarLiga() {
-    // 1. Confirmación de seguridad
+
     Swal.fire({
       title: '¿Iniciar la Liga?',
       text: "Una vez iniciada, comenzará la competición oficial.",
@@ -145,8 +145,7 @@ export class Jugar {
 
       if (result.isConfirmed) {
 
-        // 2. Petición PUT al servidor
-        // Enviamos { iniciada: true } en el cuerpo, aunque el backend podría ponerlo a true solo con recibir la petición.
+
         const payload = { iniciada: true };
 
         this.http.put(`http://localhost:8000/api/ligas/iniciar/${this.idLiga}`, payload, { withCredentials: true })
@@ -157,7 +156,7 @@ export class Jugar {
                 'La competición ha comenzado.',
                 'success'
               ).then(() => {
-                // 3. Recargamos para que la vista cambie (y desaparezca la pretemporada)
+
                 window.location.reload();
               });
             },
