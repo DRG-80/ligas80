@@ -25,6 +25,9 @@ export class Jugar {
   public idLiga: number | null = null;
   public idEquipo: number | any = null;
   public pertenencia: boolean = false;
+  public jornada: number | null = null;
+  public encuentros: any[] =[];
+  public equipos: any[] = [];
 
   constructor(
     private http: HttpClient,
@@ -96,10 +99,16 @@ export class Jugar {
     this.http.get<any>(`http://localhost:8000/api/ligas/obtenerDatosLiga/${idLiga}`, { withCredentials: true })
       .subscribe({
         next: (datos) => {
-
+          console.log(datos)
 
           this.iniciada = datos.iniciada != 0;
-          this.enfrentamientos = datos.enfrentamientos != null;
+
+          if (this.iniciada){
+            this.equipos=datos.equipos;
+            this.cargarEncuentros(datos.enfrentamientos);
+          }
+          //this.enfrentamientos = datos.enfrentamientos != null;
+          this.jornada = datos.jornada;
 
 
           this.http.get<any>(`http://localhost:8000/api/ligasEquipo/obtenerAlineaciones/${idLiga}`, { withCredentials: true })
@@ -284,6 +293,72 @@ export class Jugar {
           });
       }
     });
+  }
+
+  cargarEncuentros(enfrentamientos: any) {
+    this.encuentros = [];
+
+
+    if (!enfrentamientos) return;
+
+
+    let datosProcesados = enfrentamientos;
+
+    if (typeof datosProcesados === 'string') {
+      try {
+        datosProcesados = JSON.parse(datosProcesados);
+      } catch (e) {
+        console.error('Error al parsear el JSON de enfrentamientos:', e);
+        return;
+      }
+    }
+
+
+    Object.keys(datosProcesados).forEach(jornada => {
+
+      const numeroJornada = parseInt(jornada);
+      let partidosStrings = datosProcesados[jornada];
+
+
+      if (typeof partidosStrings === 'string') {
+        try { partidosStrings = JSON.parse(partidosStrings); } catch(e) {}
+      }
+
+
+      if (!Array.isArray(partidosStrings)) return;
+
+      const partidosDeLaJornada: any[] = [];
+
+      partidosStrings.forEach((cruce: string) => {
+
+        const ids = cruce.split('-');
+        const idLocal = +ids[0];
+        const idVisitante = +ids[1];
+
+        // Buscamos los nombres de los equipos con find
+        const equipoLocal = this.equipos?.find(e => e.id === idLocal);
+        const equipoVisitante = this.equipos?.find(e => e.id === idVisitante);
+
+
+        partidosDeLaJornada.push({
+          idLocal: idLocal,
+          idVisitante: idVisitante,
+          local: equipoLocal ? equipoLocal.nombre : `Equipo ${idLocal}`,
+          visitante: equipoVisitante ? equipoVisitante.nombre : `Equipo ${idVisitante}`,
+
+        });
+      });
+
+      this.encuentros.push({
+        jornada: numeroJornada,
+        partidos: partidosDeLaJornada
+      });
+    });
+
+
+    this.encuentros.sort((a, b) => a.jornada - b.jornada);
+
+    console.log('Calendario cargado:', this.encuentros);
   }
 
 

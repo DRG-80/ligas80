@@ -86,9 +86,13 @@ class LigaController extends Controller
 
     public function obtenerDatosLiga($idLiga)
     {
-        $datos = Liga::where('id', $idLiga)
+        $datos = Liga::with(['equipos' => function($query) {
 
-            ->select('iniciada', 'enfrentamientos', 'jornada', 'posiciones','resultados')
+            $query->select('equipo.id', 'equipo.nombre');
+        }])
+            ->where('id', $idLiga)
+
+            ->select('id', 'iniciada', 'enfrentamientos', 'jornada', 'posiciones', 'resultados')
             ->first();
 
         return response()->json($datos);

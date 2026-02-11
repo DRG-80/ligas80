@@ -21,4 +21,10 @@ class Liga extends Model
         'enfrentamientos'
 
     ];
+
+    public function equipos()
+    {
+        //Puente necesario para conectar las tablas
+        return $this->belongsToMany(Equipo::class, 'liga_equipos', 'id_liga', 'id_equipo');
+    }
 }
