@@ -117,21 +117,21 @@
 
 
         <div class="col-md-4">
-          <button class="btn btn-dark w-100 py-3 fw-bold shadow-sm btn-lg action-btn">
+          <button (click)="simularJornada()" class="btn btn-dark w-100 py-3 fw-bold shadow-sm btn-lg action-btn">
             <i class="bi bi-play-circle-fill text-danger me-2"></i> Simular Jornada
           </button>
         </div>
 
 
         <div class="col-md-4">
-          <button class="btn btn-outline-dark w-100 py-3 fw-bold shadow-sm btn-lg action-btn">
+          <button routerLink="/"  class="btn btn-outline-dark w-100 py-3 fw-bold shadow-sm btn-lg action-btn">
             <i class="bi bi-trophy-fill text-warning me-2"></i> Consultar Clasificación
           </button>
         </div>
 
 
         <div class="col-md-4">
-          <button class="btn btn-outline-secondary w-100 py-3 fw-bold shadow-sm btn-lg action-btn">
+          <button [routerLink]="['/ligasJuego', idLiga]" class="btn btn-outline-secondary w-100 py-3 fw-bold shadow-sm btn-lg action-btn">
             <i class="bi bi-gear-fill me-2"></i> Administración
           </button>
         </div>
@@ -156,7 +156,9 @@
                 <thead class="bg-light text-muted small text-uppercase">
                 <tr>
                   <th class="text-end w-40 py-3">Local</th>
-                  <th class="text-center w-20 py-3">Resultado</th>
+
+                  <th *ngIf="vs < jornada" class="text-center w-20 py-3"></th>
+                  <th *ngIf="vs >= jornada" class="text-center w-20 py-3">Resultados</th>
                   <th class="text-start w-40 py-3">Visitante</th>
                 </tr>
                 </thead>

@@ -25,9 +25,12 @@ export class Jugar {
   public idLiga: number | null = null;
   public idEquipo: number | any = null;
   public pertenencia: boolean = false;
-  public jornada: number | null = null;
+  public jornada: number = 0;
   public encuentros: any[] =[];
   public equipos: any[] = [];
+  public vs: number = 0;
+  public jornadaJugada: boolean = false;
+
 
   constructor(
     private http: HttpClient,
@@ -99,7 +102,7 @@ export class Jugar {
     this.http.get<any>(`http://localhost:8000/api/ligas/obtenerDatosLiga/${idLiga}`, { withCredentials: true })
       .subscribe({
         next: (datos) => {
-          console.log(datos)
+
 
           this.iniciada = datos.iniciada != 0;
 
@@ -108,8 +111,12 @@ export class Jugar {
             this.cargarEncuentros(datos.enfrentamientos);
           }
           //this.enfrentamientos = datos.enfrentamientos != null;
-          this.jornada = datos.jornada;
+          // Usa || 0 para proteger la asignación
+          this.jornada = datos.jornada || 0;
 
+          if (this.jornada !== null) {
+            this.vs = this.jornada - 1;
+          }
 
           this.http.get<any>(`http://localhost:8000/api/ligasEquipo/obtenerAlineaciones/${idLiga}`, { withCredentials: true })
             .subscribe({
@@ -359,6 +366,66 @@ export class Jugar {
     this.encuentros.sort((a, b) => a.jornada - b.jornada);
 
     console.log('Calendario cargado:', this.encuentros);
+  }
+
+  simularJornada() {
+
+    if (!this.idLiga) {
+      console.error('No hay liga seleccionada');
+      return;
+    }
+
+
+    Swal.fire({
+      title: `¿Simular Jornada ${this.jornada}?`,
+      text: "Se calcularán los resultados y se actualizará la clasificación.",
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Sí, jugar',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+
+      if (result.isConfirmed) {
+
+
+        Swal.fire({
+          title: 'Jugando partidos...',
+          text: 'Calculando resultados...',
+          allowOutsideClick: false,
+          didOpen: () => {
+            Swal.showLoading();
+          }
+        });
+
+
+        this.http.put(`http://localhost:8000/api/ligas/simularJornada/${this.idLiga}`, {}, { withCredentials: true })
+          .subscribe({
+            next: (res: any) => {
+
+              // 4. Éxito
+              Swal.fire({
+                icon: 'success',
+                title: '¡Jornada Finalizada!',
+                text: 'Los resultados se han guardado correctamente.',
+                confirmButtonColor: '#FF383C'
+              }).then(() => {
+                window.location.reload();
+              });
+
+            },
+            error: (err) => {
+              console.error('Error al simular:', err);
+              Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: err.error?.message || 'Hubo un problema al simular la jornada.',
+              });
+            }
+          });
+      }
+    });
   }
 
 

@@ -41,6 +41,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::put('/ligas/{id}', [LigaController::class, 'update'])->name('liga.update');
     Route::put('/ligas/generarCalendario/{id}', [LigaController::class, 'generarCalendario'])->name('liga.update');
     Route::put('/ligas/iniciar/{id}', [LigaController::class, 'iniciarLiga'])->name('liga.update');
+    Route::put('/ligas/simularJornada/{id}', [LigaController::class, 'simularJornada'])->name('liga.update');
+
 
 
 
