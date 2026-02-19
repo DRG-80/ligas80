@@ -27,6 +27,7 @@ export class Jugar {
   public pertenencia: boolean = false;
   public jornada: number = 0;
   public encuentros: any[] =[];
+  public resultados: any[] = [];
   public equipos: any[] = [];
   public vs: number = 0;
   public jornadaJugada: boolean = false;
@@ -108,11 +109,28 @@ export class Jugar {
 
           if (this.iniciada){
             this.equipos=datos.equipos;
-            this.cargarEncuentros(datos.enfrentamientos);
+            this.jornada = datos.jornada || 0;
+
+            let resultados= datos.resultados;
+
+            if (typeof resultados === 'string') {
+              try {
+                resultados = JSON.parse(resultados);
+              } catch (e) {
+                resultados = null;
+              }
+            }
+
+            if (resultados && resultados[this.jornada]){
+              //console.log('Jornada Datos ' + datos.resultados[this.jornada])
+              this.mostrarResultados();
+            }else {
+              this.cargarEncuentros(datos.enfrentamientos);
+            }
+
+
           }
-          //this.enfrentamientos = datos.enfrentamientos != null;
-          // Usa || 0 para proteger la asignación
-          this.jornada = datos.jornada || 0;
+
 
           if (this.jornada !== null) {
             this.vs = this.jornada - 1;
@@ -411,7 +429,10 @@ export class Jugar {
                 text: 'Los resultados se han guardado correctamente.',
                 confirmButtonColor: '#FF383C'
               }).then(() => {
-                window.location.reload();
+
+                this.mostrarResultados();
+                //window.location.reload();
+
               });
 
             },
@@ -422,6 +443,139 @@ export class Jugar {
                 title: 'Error',
                 text: err.error?.message || 'Hubo un problema al simular la jornada.',
               });
+            }
+          });
+      }
+    });
+  }
+
+  mostrarResultados() {
+
+
+    if (!this.idLiga) {
+      console.error('No hay ID de liga definido');
+      return;
+    }
+
+
+    this.http.get<any>(`http://localhost:8000/api/ligas/obtenerResultados/${this.idLiga}`, { withCredentials: true })
+      .subscribe({
+        next: (res) => {
+          console.log(res)
+          this.jornadaJugada=true;
+
+          this.resultados = [];
+
+          if (!res) return;
+
+          let datosProcesados = res;
+
+
+          if (typeof datosProcesados === 'string') {
+            try {
+              datosProcesados = JSON.parse(datosProcesados);
+            } catch (e) {
+              console.error('Error al parsear el JSON de resultados:', e);
+              return;
+            }
+          }
+
+
+          Object.keys(datosProcesados).forEach(partidoKey => {
+
+
+            let objetoPartido = partidoKey;
+
+
+            if (typeof objetoPartido === 'string') {
+              try { objetoPartido = JSON.parse(objetoPartido); } catch(e) {}
+            }
+
+            if (!objetoPartido) return;
+
+            const ids = objetoPartido.split('-');
+            const idLocal = +ids[0];
+            const idVisitante = +ids[1];
+            const partidosDeLaJornada: any[] = [];
+
+            const resultado = datosProcesados[objetoPartido];
+
+            const goles = resultado.split('-');
+            const golesLocal = +goles[0];
+            const golesVisitante = +goles[1];
+
+            //Buscar Nombres
+            const equipoLocal = this.equipos?.find(e => e.id === idLocal);
+            const equipoVisitante = this.equipos?.find(e => e.id === idVisitante);
+
+
+
+
+            partidosDeLaJornada.push({
+              idLocal: idLocal,
+              idVisitante: idVisitante,
+              local: equipoLocal ? equipoLocal : `Equipo ${idLocal}`,
+              visitante: equipoVisitante ? equipoVisitante : `Equipo ${idVisitante}`,
+              golesLocal: golesLocal,
+              golesVisitante: golesVisitante
+
+            });
+
+
+            this.resultados.push({
+              partido: partidosDeLaJornada
+            });
+          });
+
+
+          this.resultados.sort((a, b) => a.jornada - b.jornada);
+
+          console.log('Resultados cargados:', this.resultados);
+        },
+        error: (err) => {
+          console.error('Error al obtener los resultados:', err);
+        }
+      });
+  }
+
+  terminarJornada() {
+
+    if (!this.idLiga) return;
+
+
+    Swal.fire({
+      title: '¿Finalizar Jornada?',
+      text: "Se cerrará el acta de esta jornada y pasaremos a la siguiente.",
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Sí, siguiente jornada',
+      cancelButtonText: 'Esperar'
+    }).then((result) => {
+
+      if (result.isConfirmed) {
+
+
+        this.http.put(`http://localhost:8000/api/ligas/terminarJornada/${this.idLiga}`, {}, { withCredentials: true })
+          .subscribe({
+            next: (res: any) => {
+
+              Swal.fire({
+                icon: 'success',
+                title: '¡Jornada Finalizada!',
+                text: 'Avanzando a la siguiente fecha del calendario...',
+                timer: 1500,
+                showConfirmButton: false
+              }).then(() => {
+
+                window.location.reload();
+              });
+
+            },
+            error: (err) => {
+              console.error('Error al terminar la jornada:', err);
+              Swal.fire('Error', 'No se pudo avanzar de jornada.', 'error');
             }
           });
       }

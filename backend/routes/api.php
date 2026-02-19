@@ -36,12 +36,14 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/ligas', [LigaController::class, 'index'])->name('liga.index');
     Route::get('/ligas/misLigas/{id}', [LigaController::class, 'misLigas'])->name('liga.misLigas');
     Route::get('/ligas/obtenerDatosLiga/{id}', [LigaController::class, 'obtenerDatosLiga'])->name('liga.misLigas');
+    Route::get('/ligas/obtenerResultados/{idLiga}', [LigaController::class, 'obtenerResultados'])->name('liga.misLigas');
     Route::post('/ligas', [LigaController::class, 'store'])->name('liga.store');
     Route::delete('/ligas/{id}', [LigaController::class, 'destroy'])->name('liga.destroy');
     Route::put('/ligas/{id}', [LigaController::class, 'update'])->name('liga.update');
     Route::put('/ligas/generarCalendario/{id}', [LigaController::class, 'generarCalendario'])->name('liga.update');
     Route::put('/ligas/iniciar/{id}', [LigaController::class, 'iniciarLiga'])->name('liga.update');
     Route::put('/ligas/simularJornada/{id}', [LigaController::class, 'simularJornada'])->name('liga.update');
+    Route::put('/ligas/terminarJornada/{id}', [LigaController::class, 'terminarJornada'])->name('liga.update');
 
 
 

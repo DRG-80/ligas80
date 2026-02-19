@@ -227,86 +227,87 @@ class LigaController extends Controller
                     $golLocal=0;
                     $golVisitante=0;
 
-                    for ($i = 0; $i < 2; $i++) {
-
-                        if ($equipoLocal->media<=90 || $equipoVisitante->media<=90 ){
-
-                            $probabilidad = rand(1, 100);
-
-                            if ($probabilidad<=85 && $equipoLocal->media<=85){
-                                $golLocal++;
-
-                            }elseif ($probabilidad<=85 && $equipoVisitante->media<=85){
-                                $golVisitante++;
-                            }
-
-                        }elseif ($equipoLocal->media<=85 || $equipoVisitante->media<=85){
-
-                            $probabilidad = rand(1, 100);
-
-                            if ($probabilidad<=80 && $equipoLocal->media<=80){
-                                $golLocal++;
-
-                            }elseif ($probabilidad<=80 && $equipoVisitante->media<=80){
-                                $golVisitante++;
-                            }
-
-                        }elseif ($equipoLocal->media<=80 || $equipoVisitante->media<=80){
-
-                            $probabilidad = rand(1, 100);
-
-                            if ($probabilidad<=75 && $equipoLocal->media<=75){
-                                $golLocal++;
-
-                            }elseif ($probabilidad<=75 && $equipoVisitante->media<=75){
-                                $golVisitante++;
-                            }
-
-                        }elseif ($equipoLocal->media<=75 || $equipoVisitante->media<=75){
-
-                            $probabilidad = rand(1, 100);
-
-                            if ($probabilidad<=50 && $equipoLocal->media<=50){
-                                $golLocal++;
-
-                            }elseif ($probabilidad<=50 && $equipoVisitante->media<=50){
-                                $golVisitante++;
-                            }
-
-                        }elseif ($equipoLocal->media<=70 || $equipoVisitante->media<=70){
-
-                            $probabilidad = rand(1, 100);
-
-                            if ($probabilidad<=30 && $equipoLocal->media<=30){
-                                $golLocal++;
-
-                            }elseif ($probabilidad<=30 && $equipoVisitante->media<=30){
-                                $golVisitante++;
-                            }
-
-                        }elseif ($equipoLocal->media<=65 || $equipoVisitante->media<=65){
-
-                            $probabilidad = rand(1, 100);
-
-                            if ($probabilidad<=25 && $equipoLocal->media<=25){
-                                $golLocal++;
-
-                            }elseif ($probabilidad<=25 && $equipoVisitante->media<=25){
-                                $golVisitante++;
-                            }
-
-                        }else{
-                            $probabilidad = rand(1, 100);
-
-                            if ($probabilidad<=10 && $equipoLocal->media<=10){
-                                $golLocal++;
-
-                            }elseif ($probabilidad<=10 && $equipoVisitante->media<=10){
-                                $golVisitante++;
-                            }
 
 
+                    for ($i = 0; $i < 4; $i++) {
+
+                        $probabilidadGolL = rand(1, 100);
+
+                        switch (true) {
+                            case ($equipoLocal->media >= 90):
+
+                                if ($probabilidadGolL <= 65) $golLocal++;
+                                break;
+
+                            case ($equipoLocal->media >= 85):
+
+                                if ($probabilidadGolL <= 60) $golLocal++;
+                                break;
+
+                            case ($equipoLocal->media >= 80):
+
+                                if ($probabilidadGolL <= 55) $golLocal++;
+                                break;
+
+                            case ($equipoLocal->media >= 75):
+
+                                if ($probabilidadGolL <= 50) $golLocal++;
+                                break;
+
+                            case ($equipoLocal->media >= 70):
+
+                                if ($probabilidadGolL <= 45) $golLocal++;
+                                break;
+
+                            case ($equipoLocal->media >= 65):
+
+                                if ($probabilidadGolL <= 40) $golLocal++;
+                                break;
+
+
+                            default:
+
+                                if (rand(1, 100) <= 30) $golLocal++;
+                                break;
                         }
+
+                        $probabilidadGolV = rand(1, 100);
+
+                        switch (true) {
+                            case ($equipoVisitante->media >= 90):
+
+                                if ($probabilidadGolV <= 65) $golVisitante++;
+                                break;
+
+                            case ($equipoVisitante->media >= 85):
+
+                                if ($probabilidadGolV <= 60) $golVisitante++;
+                                break;
+
+                            case ($equipoVisitante->media >= 80):
+
+                                if ($probabilidadGolV <= 55) $golVisitante++;
+                                break;
+
+                            case ($equipoVisitante->media >= 75):
+
+                                if ($probabilidadGolV <= 50) $golVisitante++;
+                                break;
+
+                            case ($equipoVisitante->media >= 70):
+                                if ($probabilidadGolV <= 45) $golVisitante++;
+                                break;
+
+                            case ($equipoVisitante->media >= 65):
+                                if ($probabilidadGolV <= 40) $golVisitante++;
+                                break;
+
+                            default:
+
+                                if (rand(1, 100) <= 30) $golVisitante++;
+                                break;
+                        }
+
 
                     }
 
@@ -440,6 +441,39 @@ class LigaController extends Controller
 
         $liga->save();
 
+
+    }
+
+    public function obtenerResultados($idLiga)
+    {
+
+        $liga = Liga::findOrFail($idLiga);
+        $jornada = $liga->jornada;
+
+
+        $historialResultados = is_string($liga->resultados)
+            ? json_decode($liga->resultados, true)
+            : ($liga->resultados ?? []);
+
+
+        $resultados = $historialResultados[$jornada] ?? [];
+
+        return response()->json($resultados);
+
+    }
+
+    public function terminarJornada($idLiga)
+    {
+        $liga = Liga::findOrFail($idLiga);
+
+        // Si no es la última jornada, avanzamos
+        if ($liga->jornada < 38) {
+            $liga->jornada++;
+            $liga->save();
+            return response()->json(['message' => 'Jornada avanzada correctamente']);
+        }
+
+        return response()->json(['message' => 'Liga finalizada'], 200);
 
     }
 
