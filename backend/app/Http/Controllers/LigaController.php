@@ -325,8 +325,8 @@ class LigaController extends Controller
                     }
 
                     $resultados[$jornada][$encuentro]=$golLocal.'-'.$golVisitante;
-                    $puntos[$equipoLocal->id_equipo]=$puntosL.'-'.$golLocal.'-'.$golVisitante;
-                    $puntos[$equipoVisitante->id_equipo]=$puntosV.'-'.$golVisitante.'-'.$golLocal;
+                    $puntos[$equipoLocal->id_equipo]=$puntosL.';'.$golLocal.';'.$golVisitante;
+                    $puntos[$equipoVisitante->id_equipo]=$puntosV.';'.$golVisitante.';'.$golLocal;
 
 
 
@@ -347,7 +347,7 @@ class LigaController extends Controller
 
             foreach ($idsEquipos as $equipo){
 
-                $datosJornada=explode('-', $puntos[$equipo]);
+                $datosJornada=explode(';', $puntos[$equipo]);
 
                 $puntosEquipo = (int)$datosJornada[0];
                 $golesFavor= (int)$datosJornada[1];
@@ -366,7 +366,7 @@ class LigaController extends Controller
 
 
 
-                $posiciones[$equipo]=$puntosEquipo.'-'.$V.'-'.$E.'-'.$D.'-'.$golesFavor.'-'.$golesContra.'-'.$diferenciaGoles;
+                $posiciones[$equipo]=$puntosEquipo.';'.$V.';'.$E.';'.$D.';'.$golesFavor.';'.$golesContra.';'.$diferenciaGoles;
 
             }
 
@@ -376,7 +376,7 @@ class LigaController extends Controller
 
             foreach ($posiciones as $equipo  => $datosActualesStr){
 
-                $datosJornada=explode('-', $puntos[$equipo]);
+                $datosJornada=explode(';', $puntos[$equipo]);
 
                 $puntosEquipo = (int)$datosJornada[0];
                 $golesFavor= (int)$datosJornada[1];
@@ -393,7 +393,7 @@ class LigaController extends Controller
                     $D=1;
                 }
 
-                $datosActuales = explode('-', $datosActualesStr);
+                $datosActuales = explode(';', $datosActualesStr);
 
                 $puntosActuales  = (int)$datosActuales[0] + $puntosEquipo;
                 $victorias       = (int)$datosActuales[1] + $V;
@@ -403,7 +403,7 @@ class LigaController extends Controller
                 $golesContraActuales= (int)$datosActuales[5] + $golesContra;
                 $diferenciaGoles = $golesFavorActuales-$golesContraActuales;
 
-                $posiciones[$equipo]= $puntosActuales.'-'.$victorias.'-'.$empates.'-'.$derrotas.'-'.$golesFavorActuales.'-'.$golesContraActuales.'-'.$diferenciaGoles;
+                $posiciones[$equipo]= $puntosActuales.';'.$victorias.';'.$empates.';'.$derrotas.';'.$golesFavorActuales.';'.$golesContraActuales.';'.$diferenciaGoles;
 
 
 
@@ -416,8 +416,8 @@ class LigaController extends Controller
         uasort($posiciones, function ($a, $b) {
 
 
-            $datosA = explode('-', $a);
-            $datosB = explode('-', $b);
+            $datosA = explode(';', $a);
+            $datosB = explode(';', $b);
 
             $puntosA = (int)$datosA[0];
             $puntosB = (int)$datosB[0];
@@ -466,8 +466,8 @@ class LigaController extends Controller
     {
         $liga = Liga::findOrFail($idLiga);
 
-        // Si no es la última jornada, avanzamos
-        if ($liga->jornada < 38) {
+
+        if ($liga->jornada <= 38) {
             $liga->jornada++;
             $liga->save();
             return response()->json(['message' => 'Jornada avanzada correctamente']);

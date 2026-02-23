@@ -111,6 +111,11 @@ export class Jugar {
             this.equipos=datos.equipos;
             this.jornada = datos.jornada || 0;
 
+            if (this.jornada==39){
+
+              this.router.navigate([`/clasificacion/${idLiga}`]);
+            }
+
             let resultados= datos.resultados;
 
             if (typeof resultados === 'string') {

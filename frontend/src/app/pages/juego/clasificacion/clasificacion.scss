@@ -1,0 +1,61 @@
+
+$color-rojo-corporativo: #FF383C;
+$color-negro: #000;
+
+
+.clasificacion-wrapper {
+  min-height: 60vh;
+}
+
+.loading-container {
+  height: 50vh;
+}
+
+
+.custom-spinner {
+  width: 4rem;
+  height: 4rem;
+}
+
+.icon-large {
+  font-size: 5rem;
+}
+
+
+.titulo-rojo,
+.texto-corporativo {
+  color: $color-rojo-corporativo;
+}
+
+.divider-negro {
+  width: 60px;
+  height: 4px;
+  background-color: $color-negro;
+}
+
+
+.tabla-clasificacion {
+  white-space: nowrap;
+}
+
+.bg-success{
+  background-color: orangered !important;
+
+}
+
+.bg-info{
+  background-color: green !important;
+
+}
+
+.badge-posicion {
+  width: 35px;
+  padding: 0.5rem 0;
+  display: inline-block;
+}
+
+.legend-dot {
+  width: 12px;
+  height: 12px;
+  display: inline-block;
+}
