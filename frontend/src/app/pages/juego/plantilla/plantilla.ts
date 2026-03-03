@@ -21,9 +21,9 @@ import Swal from 'sweetalert2';
 })
 export class Plantilla implements OnInit{
 
-  portero: any[] = [];    // Máx 1
-  defensas: any[] = [];   // Máx 4
-  medios: any[] = [];     // Máx 3
+  portero: any[] = [];
+  defensas: any[] = [];
+  medios: any[] = [];
   delanteros: any[] = [];
   banquillo: any[] = [];
   public cargando: boolean = true;
@@ -126,8 +126,8 @@ export class Plantilla implements OnInit{
     this.http.get<any>(`http://localhost:8000/api/ligasEquipo/obtenerAlineacion/${idLiga}/${idEquipo}`, { withCredentials: true })
       .subscribe({
         next: (alineacion) => {
-          // Asignamos directamente.
-          // El backend asegura devolver siempre la estructura, pero usamos '|| []' por seguridad.
+
+
           this.portero = alineacion.portero || [];
           this.defensas = alineacion.defensas || [];
           this.medios = alineacion.medios || [];
@@ -220,7 +220,7 @@ export class Plantilla implements OnInit{
   }
 
   guardarAlineacion() {
-    // Validar (opcional)
+
     if (this.portero.length < 1 || this.defensas.length < 4 || this.medios.length < 3 || this.delanteros.length < 3) {
       Swal.fire('Alineación incompleta', 'Debes rellenar el 1-4-3-3 para guardar.', 'warning');
       return;
@@ -230,7 +230,7 @@ export class Plantilla implements OnInit{
       id_liga: this.idLiga,
       id_equipo: this.idEquipo,
 
-      // CAMBIO AQUÍ: Ahora guardamos objetos { id, media }
+
       portero: this.portero.map(j => ({ id: j.id, media: j.media })),
       defensas: this.defensas.map(j => ({ id: j.id, media: j.media })),
       medios: this.medios.map(j => ({ id: j.id, media: j.media })),
@@ -248,7 +248,43 @@ export class Plantilla implements OnInit{
       });
   }
 
+  venderJugador(idJugador: number) {
 
+    Swal.fire({
+      title: '¿Estás seguro?',
+      text: "El jugador será vendido y ya no pertenecerá a tu equipo.",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Sí, vender',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+
+      if (result.isConfirmed) {
+
+
+        this.http.delete( `http://localhost:8000/api/jugadoresEquipo/vender/${this.idLiga}/${this.idEquipo}/${idJugador}`, { withCredentials: true }).subscribe({
+          next: (res: any) => {
+
+            Swal.fire('¡Vendido!', res.message || 'El jugador ha sido vendido.', 'success');
+
+
+            this.banquillo = this.banquillo.filter(j => j.id !== idJugador);
+
+
+          },
+          error: (err) => {
+
+            console.error('Error al vender:', err);
+            const mensajeError = err.error?.message || 'Hubo un problema al vender al jugador.';
+            Swal.fire('Error', mensajeError, 'error');
+          }
+        });
+
+      }
+    });
+  }
 
 
 }

@@ -1,4 +1,4 @@
-/* Botón estilo NEGRO (Tu estilo corporativo) */
+
 .btn-nuevoEquipo {
   color: black;
   border: 2px solid black;
@@ -15,7 +15,7 @@
   transform: scale(1.05);
 }
 
-/* Cabecera de la tabla */
+
 .thead-corporativo th {
   background-color: #FF383C !important;
   color: white !important;
@@ -25,11 +25,11 @@
   font-size: 0.9rem;
 }
 
-/* Ajustes de la tabla */
+
 .tabla-fichajes tbody tr {
   transition: background-color 0.2s;
 }
 
 .tabla-fichajes tbody tr:hover {
-  background-color: rgba(255, 56, 60, 0.05) !important; /* Rojo muy suave al pasar el ratón */
+  background-color: rgba(255, 56, 60, 0.05) !important;
 }

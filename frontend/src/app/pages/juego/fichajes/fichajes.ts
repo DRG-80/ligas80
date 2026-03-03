@@ -21,10 +21,12 @@ import Swal from 'sweetalert2';
 export class Fichajes {
 
   jugadores: any[] = [];
+  jugadoresEquipo: any[] = [];
 
 
   dtOptions: Config = {};
-  dtTrigger: Subject<any> = new Subject<any>();
+  dtTriggerLibres: Subject<any> = new Subject<any>();
+  dtTriggerEquipos: Subject<any> = new Subject<any>();
 
   public idLiga: number | null = null;
   public idEquipo: number | null = null;
@@ -32,12 +34,22 @@ export class Fichajes {
   public pertenencia: boolean = false;
   public presupuesto: number = 0;
 
+  public fichajesEquipos: boolean = false;
+
+
 
   nuevoFichaje: any = {
     id_liga: null,
     id_jugador:null,
     id_equipo:null
 
+  };
+
+  clausulazo: any = {
+    id_liga: null,
+    id_jugador:null,
+    id_equipo_a:null,
+    id_equipo_b:null,
   };
 
   constructor(
@@ -50,6 +62,7 @@ export class Fichajes {
   ngOnInit(): void {
 
     this.dtOptions = {
+      destroy: true,
       paging: true,
       searching: true,
       ordering: true,
@@ -112,7 +125,7 @@ export class Fichajes {
           } else {
             console.log('✅ Acceso permitido');
             this.pertenencia=true;
-            this.cargarJugadores(idLiga);
+            this.cargarJugadores();
             this.obtenerPresupuesto();
 
           }
@@ -124,23 +137,21 @@ export class Fichajes {
       });
   }
 
-  cargarJugadores(idLiga: number) {
-
-    this.http.get<any[]>(`http://localhost:8000/api/jugadoresEquipo/${idLiga}`, { withCredentials: true })
+  cargarJugadores() {
+    this.http.get<any[]>(`http://localhost:8000/api/jugadoresEquipo/${this.idLiga}`, { withCredentials: true })
       .subscribe({
         next: (res) => {
           this.jugadores = res;
-
-          if (!this.dtTrigger.closed) {
-            this.dtTrigger.next(null);
-          }
+          setTimeout(() => {
+            if (!this.dtTriggerLibres.closed) this.dtTriggerLibres.next(null);
+          }, 50);
         },
-        error: (err) => console.error('Error cargando ligas:', err)
+        error: (err) => console.error('Error cargando libres:', err)
       });
   }
 
   obtenerPresupuesto() {
-    // Cambiamos <any[]> por <any> porque devuelve un solo objeto
+
     this.http.get<any>(`http://localhost:8000/api/ligasEquipo/obtenerPresupuesto/${this.idLiga}/${this.idEquipo}`, { withCredentials: true })
       .subscribe({
         next: (res) => {
@@ -166,7 +177,7 @@ export class Fichajes {
       return;
     }
 
-    // 1. Primero mostramos la advertencia
+
     Swal.fire({
       title: '¿Estás seguro?',
       text: "Vas a fichar a este jugador y se descontará de tu presupuesto.",
@@ -178,7 +189,7 @@ export class Fichajes {
       cancelButtonText: 'Cancelar'
     }).then((result) => {
 
-      // 2. Solo si el usuario confirma, hacemos la petición
+
       if (result.isConfirmed) {
 
         this.http.post('http://localhost:8000/api/jugadoresEquipo', this.nuevoFichaje, { withCredentials: true })
@@ -198,7 +209,7 @@ export class Fichajes {
             },
             error: (err) => {
               console.error('Error al fichar:', err);
-              // Capturamos el mensaje de error del backend (ej: "No tienes suficiente presupuesto")
+
               const mensaje = err.error?.message || 'No se pudo fichar al jugador.';
 
               Swal.fire({
@@ -210,6 +221,107 @@ export class Fichajes {
           });
       }
     });
+  }
+
+  clausularJugador(idJugador: number,idEquipo: number) {
+
+    const usuario = this.auth.usuarioActual();
+
+    if (usuario && usuario.id) {
+      this.clausulazo.id_liga = this.idLiga;
+      this.clausulazo.id_jugador = idJugador;
+      this.clausulazo.id_equipo_a = this.idEquipo;
+      this.clausulazo.id_equipo_b = idEquipo;
+    } else {
+      Swal.fire('Error', 'No se ha podido identificar al usuario', 'error');
+      return;
+    }
+
+
+    Swal.fire({
+      title: '¿Estás seguro?',
+      text: "Vas a clausular a este jugador y se descontará de tu presupuesto.",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Sí, clausular',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+
+
+      if (result.isConfirmed) {
+
+        this.http.put('http://localhost:8000/api/jugadoresEquipo/clausularJugador', this.clausulazo, { withCredentials: true })
+          .subscribe({
+            next: (res) => {
+              Swal.fire({
+                icon: 'success',
+                title: '¡Clausulazo Realizado!',
+                text: 'El clausulazo se ha realizado correctamente.',
+                confirmButtonColor: '#3085d6',
+                confirmButtonText: 'Continuar'
+              }).then((finalResult) => {
+                if (finalResult.isConfirmed) {
+                  window.location.reload();
+                }
+              });
+            },
+            error: (err) => {
+              console.error('Error al clausular:', err);
+
+              const mensaje = err.error?.message || 'No se pudo clausular al jugador.';
+
+              Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: mensaje,
+              });
+            }
+          });
+      }
+    });
+  }
+
+  vistaJugadoresEquipo() {
+    this.fichajesEquipos = true;
+
+
+    this.jugadoresEquipo = [];
+    this.dtTriggerEquipos = new Subject<any>();
+
+
+    this.cargarJugadoresEquipo();
+  }
+
+  vistaJugadoresLibres() {
+    this.fichajesEquipos = false;
+
+
+    this.jugadores = [];
+    this.dtTriggerLibres = new Subject<any>();
+
+
+    this.cargarJugadores();
+  }
+
+  cargarJugadoresEquipo() {
+    this.http.get<any[]>(`http://localhost:8000/api/jugadoresEquipo/jugadoresEquipo/${this.idLiga}/${this.idEquipo}`, { withCredentials: true })
+      .subscribe({
+        next: (res) => {
+          this.jugadoresEquipo = res;
+          console.log(this.jugadoresEquipo)
+          setTimeout(() => {
+            if (!this.dtTriggerEquipos.closed) this.dtTriggerEquipos.next(null);
+          }, 50);
+        },
+        error: (err) => console.error('Error cargando de equipos:', err)
+      });
+  }
+
+  ngOnDestroy(): void {
+    if (this.dtTriggerLibres) this.dtTriggerLibres.unsubscribe();
+    if (this.dtTriggerEquipos) this.dtTriggerEquipos.unsubscribe();
   }
 
   protected readonly console = console;

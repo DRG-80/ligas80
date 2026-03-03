@@ -68,8 +68,11 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
     // 6. Jugadores-Equipo
     Route::get('/jugadoresEquipo/{id}', [JugadoresEquipoController::class, 'index'])->name('ligaEquipo.index');
+    Route::get('/jugadoresEquipo/jugadoresEquipo/{idLiga}/{idEquipo}', [JugadoresEquipoController::class, 'jugadoresEquipo'])->name('ligaEquipo.index');
     Route::get('/jugadoresEquipo/misJugadores/{idLiga}/{idEquipo}', [JugadoresEquipoController::class, 'obtenerMisJugadores'])->name('ligaEquipo.index');
     Route::post('/jugadoresEquipo', [JugadoresEquipoController::class, 'store'])->name('ligaEquipo.store');
+    Route::put('/jugadoresEquipo/clausularJugador', [JugadoresEquipoController::class, 'clausularJugador'])->name('ligaEquipo.store');
+    Route::delete('/jugadoresEquipo/vender/{idLiga}/{idEquipo}/{idJugador}', [JugadoresEquipoController::class, 'venderJugador'])->name('ligaEquipo.index');
 
 
 

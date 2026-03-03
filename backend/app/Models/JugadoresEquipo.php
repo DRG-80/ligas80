@@ -18,4 +18,19 @@ class JugadoresEquipo extends Model
         'clausula',
 
     ];
+
+    //Relaciones necesarias
+
+    public function jugador()
+    {
+        return $this->belongsTo(Jugador::class, 'id_jugador');
+    }
+
+    public function equipo()
+    {
+        return $this->belongsTo(Equipo::class, 'id_equipo');
+    }
+
+
+
 }
