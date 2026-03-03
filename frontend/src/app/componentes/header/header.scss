@@ -78,8 +78,17 @@ body, app-root {
   }
 
   .collapse.d-md-none .btn-red {
-    max-width: 90%;   /* ya lo tienes */
-    margin: 10px 0 0 0; /* margen superior de 10px */
+    max-width: 90%;
+    margin: 10px 0 0 0;
   }
 
+}
+.mobile-menu-wrapper {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s ease-in-out;
+}
+
+.mobile-menu-wrapper.open {
+  max-height: 500px;
 }

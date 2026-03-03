@@ -1,41 +1,32 @@
 <nav class="navbar">
 
-  <img src="Ligas80-logo.png" alt="Logo" class="header-logo">
+  <img routerLink="/" src="Ligas80-logo.png" alt="Logo" class="header-logo">
 
-  <button class="navbar-toggler d-md-none btn btn-red" type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#mobileMenu">
+  <button class="navbar-toggler d-md-none btn btn-red" type="button" (click)="menuAbierto = !menuAbierto">
     <span class="navbar-toggler-icon"></span>
   </button>
 
   <div class="nav-buttons d-none d-md-flex gap-2">
-    <a routerLink="/" class="btn-red">Inicio</a>
-    <a  *ngIf="estaLogueado() && !auth.tieneIdNegativo() "  routerLink="/ligasCliente" class="btn-red">Mis Ligas</a>
-    <a  *ngIf="estaLogueado() && !auth.tieneIdNegativo() "  routerLink="/equiposCliente" class="btn-red">Mis Equipos</a>
 
-
+    <a *ngIf="estaLogueado() && !auth.tieneIdNegativo()" routerLink="/ligasCliente" class="btn-red">Mis Ligas</a>
+    <a *ngIf="estaLogueado() && !auth.tieneIdNegativo()" routerLink="/equiposCliente" class="btn-red">Mis Equipos</a>
     <a *ngIf="!estaLogueado()" routerLink="/login" class="btn-red">Iniciar Sesión</a>
-
     <a *ngIf="estaLogueado()" (click)="logout()" class="btn-red">Cerrar Sesión</a>
     <a *ngIf="auth.tieneIdNegativo()" routerLink="/jugadores" class="btn-red">Gestionar Jugadores</a>
-
     <a *ngIf="auth.tieneIdNegativo()" routerLink="/ligas" class="btn-red">Gestionar Ligas</a>
     <a *ngIf="auth.tieneIdNegativo()" routerLink="/equipos" class="btn-red">Gestionar Equipos</a>
     <a routerLink="/register" class="btn-red">Contacte con nosotros</a>
   </div>
 
-  <div class="collapse d-md-none w-100" id="mobileMenu">
-    <div class="d-flex flex-column align-items-center mt-3">
-      <a routerLink="/" class="btn-red mb-2 w-100">Inicio</a>
-
-      <a *ngIf="!estaLogueado()" routerLink="/login" class="btn-red mb-2 w-100">Iniciar Sesión</a>
-
-      <button *ngIf="estaLogueado()" (click)="logout()" class="btn-red mb-2 w-100">Cerrar Sesión</button>
-      <a  *ngIf="estaLogueado() && !auth.tieneIdNegativo() "  routerLink="/ligasCliente" class="btn-red mb-2 w-100">Mis Ligas</a>
-      <a  *ngIf="estaLogueado() && !auth.tieneIdNegativo() "  routerLink="/equiposCliente" class="btn-red mb-2 w-100">Mis Equipos</a>
-      <a *ngIf="auth.tieneIdNegativo()" routerLink="/ligas" class="btn-red mb-2 w-100">Gestionar Ligas</a>
-      <a *ngIf="auth.tieneIdNegativo()" routerLink="/equipos" class="btn-red mb-2 w-100"> Gestionar Equipos</a>
-      <a routerLink="/register" class="btn-red mb-2 w-100">Contacte con nosotros</a>
+  <div class="mobile-menu-wrapper d-md-none w-100" [class.open]="menuAbierto">
+    <div class="d-flex flex-column align-items-center mt-3 pb-3">
+      <a *ngIf="!estaLogueado()" routerLink="/login" class="btn-red mb-2 w-100" (click)="menuAbierto = false">Iniciar Sesión</a>
+      <button *ngIf="estaLogueado()" (click)="logout(); menuAbierto = false" class="btn-red mb-2 w-100">Cerrar Sesión</button>
+      <a *ngIf="estaLogueado() && !auth.tieneIdNegativo()" routerLink="/ligasCliente" class="btn-red mb-2 w-100" (click)="menuAbierto = false">Mis Ligas</a>
+      <a *ngIf="estaLogueado() && !auth.tieneIdNegativo()" routerLink="/equiposCliente" class="btn-red mb-2 w-100" (click)="menuAbierto = false">Mis Equipos</a>
+      <a *ngIf="auth.tieneIdNegativo()" routerLink="/ligas" class="btn-red mb-2 w-100" (click)="menuAbierto = false">Gestionar Ligas</a>
+      <a *ngIf="auth.tieneIdNegativo()" routerLink="/equipos" class="btn-red mb-2 w-100" (click)="menuAbierto = false">Gestionar Equipos</a>
+      <a routerLink="/register" class="btn-red mb-2 w-100" (click)="menuAbierto = false">Contacte con nosotros</a>
     </div>
   </div>
 
