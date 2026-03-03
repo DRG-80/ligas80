@@ -261,9 +261,15 @@ class JugadoresEquipoController extends Controller
 
         foreach ($lineas as $linea) {
             if (isset($alineacion[$linea]) && is_array($alineacion[$linea])) {
-                $alineacion[$linea] = array_filter($alineacion[$linea], function ($idAlineado) use ($idJugador) {
-                    return $idAlineado != $idJugador;
+
+
+                $alineacion[$linea] = array_filter($alineacion[$linea], function ($jugadorAlineado) use ($idJugador) {
+
+
+                    return $jugadorAlineado['id'] != $idJugador;
+
                 });
+
                 $alineacion[$linea] = array_values($alineacion[$linea]);
             }
         }

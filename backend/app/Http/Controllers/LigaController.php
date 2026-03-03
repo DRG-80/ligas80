@@ -6,6 +6,7 @@ use App\Models\Equipo;
 use App\Models\LigaEquipo;
 use Illuminate\Http\Request;
 use App\Models\Liga;
+use Termwind\Components\Li;
 
 
 class LigaController extends Controller
@@ -203,12 +204,26 @@ class LigaController extends Controller
     public function simularJornada($idLiga)
     {
 
+        $ligaEquipo=LigaEquipo::where('id_liga',$idLiga)->where('elegido',1)->first();
+
+        $alineacion = is_string($ligaEquipo->alineacion) ? json_decode($ligaEquipo->alineacion, true) : $ligaEquipo->alineacion;
+        $totalJugadoresAlineados = array_sum(array_map('count', $alineacion));
+
+        if ($totalJugadoresAlineados != 11) {
+            return response()->json([
+                'message' => 'Debes alinear exactamente a 11 jugadores para poder continuar.',
+                'actuales' => $totalJugadoresAlineados
+            ], 422);
+        }
+
+
         $liga = Liga::findOrFail($idLiga);
         $idsEquipos = LigaEquipo::where('id_liga', $idLiga)->pluck('id_equipo');
         $enfrentamientos = $liga->enfrentamientos;
         $jornada = $liga->jornada;
         $resultados[$jornada]=[];
         $puntos=[];
+
 
         if (is_string($enfrentamientos)) {
             $enfrentamientos = json_decode($enfrentamientos, true);
