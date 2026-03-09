@@ -21,6 +21,7 @@ import Swal from 'sweetalert2';
 export class Ligas {
 
   ligas: any[] = [];
+  cargando: boolean=true;
 
 
   nuevaLiga = {
@@ -76,6 +77,7 @@ export class Ligas {
       next: (user) => {
 
         this.cargarLigas();
+        this.cargando = false;
       },
       error: () => {
 

@@ -22,6 +22,9 @@ export class Jugar {
   fichajesEquipos: boolean =false;
   enfrentamientos: boolean =false;
 
+  public cargando: boolean = true;
+
+
   public idLiga: number | null = null;
   public idEquipo: number | any = null;
   public pertenencia: boolean = false;
@@ -106,7 +109,7 @@ export class Jugar {
 
 
           this.iniciada = datos.iniciada != 0;
-
+          this.enfrentamientos = datos.enfrentamientos !== null ? datos.enfrentamientos : false;
           if (this.iniciada){
             this.equipos=datos.equipos;
             this.jornada = datos.jornada || 0;
@@ -155,6 +158,10 @@ export class Jugar {
                   this.fichajesEquipos = false;
                 }
 
+                setTimeout(() => {
+                  this.cargando = false;
+                }, 800);
+
               },
               error: (error) => {
                 console.error('Error cargando las alineaciones:', error);
@@ -176,8 +183,8 @@ export class Jugar {
       text: "Una vez iniciada, comenzará la competición oficial.",
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonColor: '#3085d6', // O tu rojo #FF383C
-      cancelButtonColor: '#d33',
+      confirmButtonColor: '#FF383C',
+      cancelButtonColor: '#000',
       confirmButtonText: 'Sí, ¡que empiece!',
       cancelButtonText: 'Cancelar'
     }).then((result) => {
@@ -221,8 +228,8 @@ export class Jugar {
       text: "Se asignarán jugadores aleatorios al resto de equipos para rellenar sus plantillas.",
       icon: 'question',
       showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
+      confirmButtonColor: '#FF383C',
+      cancelButtonColor: '#000',
       confirmButtonText: 'Simular',
       cancelButtonText: 'Cancelar'
     }).then((result) => {
@@ -278,8 +285,8 @@ export class Jugar {
       text: "Se crearán los enfrentamientos de ida y vuelta para todos los equipos.",
       icon: 'question',
       showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
+      confirmButtonColor: '#FF383C',
+      cancelButtonColor: '#000',
       confirmButtonText: 'Sí, generar',
       cancelButtonText: 'Cancelar'
     }).then((result) => {
@@ -404,8 +411,8 @@ export class Jugar {
       text: "Se calcularán los resultados y se actualizará la clasificación.",
       icon: 'question',
       showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
+      confirmButtonColor: '#FF383C',
+      cancelButtonColor: '#000',
       confirmButtonText: 'Sí, jugar',
       cancelButtonText: 'Cancelar'
     }).then((result) => {
@@ -553,8 +560,8 @@ export class Jugar {
       text: "Se cerrará el acta de esta jornada y pasaremos a la siguiente.",
       icon: 'question',
       showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
+      confirmButtonColor: '#FF383C',
+      cancelButtonColor: '#000',
       confirmButtonText: 'Sí, siguiente jornada',
       cancelButtonText: 'Esperar'
     }).then((result) => {

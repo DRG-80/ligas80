@@ -28,6 +28,7 @@ export class LigasJuego implements OnInit {
   public elegido: boolean = false;
   equiposDisponibles: any[] = [];
   miEquipo: any = null;
+  cargando: boolean=true;
 
 
 
@@ -74,7 +75,6 @@ export class LigasJuego implements OnInit {
     }
   }
 
-  // Lógica unificada para evitar condiciones de carrera
   verificarSesionYPermisos() {
 
     this.auth.user().subscribe({
@@ -143,6 +143,7 @@ export class LigasJuego implements OnInit {
       .subscribe({
         next: (res) => {
           this.equiposDisponibles = res;
+          this.cargando = false;
 
           if (!this.dtTrigger.closed) {
             this.dtTrigger.next(null);
@@ -154,40 +155,56 @@ export class LigasJuego implements OnInit {
 
   elegirEquipo(idEquipo: number) {
 
-
     if (!this.idLiga) {
       console.error('No hay ID de liga cargado');
       return;
     }
 
-    const payload = {
-      id_equipo: idEquipo
-    };
 
-    this.http.post(`http://localhost:8000/api/ligasEquipo/elegir/${this.idLiga}`, payload, { withCredentials: true })
-      .subscribe({
-        next: (res) => {
-          Swal.fire({
-            icon: 'success',
-            title: '¡Equipo Elegido!',
-            text: 'Has tomado el control del equipo correctamente.',
-            confirmButtonColor: '#FF383C',
-            confirmButtonText: 'Continuar'
-          }).then((result) => {
-            if (result.isConfirmed) {
-              window.location.reload();
+    Swal.fire({
+      title: '¿Estás seguro?',
+      text: "Vas a tomar el control de este equipo en la liga. Esta acción no se puede deshacer.",
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#FF383C',
+      cancelButtonColor: '#000',
+      confirmButtonText: 'Sí, elegir equipo',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+
+
+      if (result.isConfirmed) {
+        const payload = {
+          id_equipo: idEquipo
+        };
+
+        this.http.post(`http://localhost:8000/api/ligasEquipo/elegir/${this.idLiga}`, payload, { withCredentials: true })
+          .subscribe({
+            next: (res) => {
+              Swal.fire({
+                icon: 'success',
+                title: '¡Equipo Elegido!',
+                text: 'Has tomado el control del equipo correctamente.',
+                confirmButtonColor: '#FF383C',
+                confirmButtonText: 'Continuar'
+              }).then((resultInner) => {
+                if (resultInner.isConfirmed) {
+                  window.location.reload();
+                }
+              });
+            },
+            error: (err) => {
+              console.error('Error al elegir:', err);
+              Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: err.error?.message || 'No se pudo elegir el equipo. Quizás ya está ocupado.',
+                confirmButtonColor: '#FF383C'
+              });
             }
           });
-        },
-        error: (err) => {
-          console.error('Error al elegir:', err);
-          Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: err.error?.message || 'No se pudo elegir el equipo. Quizás ya está ocupado.',
-          });
-        }
-      });
+      }
+    });
   }
 
   obtenerEquipoElegido(idLiga: number) {
@@ -196,6 +213,8 @@ export class LigasJuego implements OnInit {
       .subscribe({
         next: (res) => {
           this.miEquipo = res;
+          this.cargando = false;
+
 
           if (!this.dtTrigger.closed) {
             this.dtTrigger.next(null);

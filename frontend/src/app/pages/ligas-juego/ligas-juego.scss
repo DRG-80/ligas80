@@ -76,6 +76,10 @@
   border-color: #FF383C;
 }
 
+.loading{
+  color: white;
+}
+
 .btn-menu-juego.btn-jugar:hover .titulo,
 .btn-menu-juego.btn-jugar:hover .icon-box {
   color: white;
@@ -83,4 +87,26 @@
 
 .btn-menu-juego.btn-jugar:hover .subtitulo {
   color: #ffdce0;
+}
+
+body {
+  background-image: url('/estadioLigas80.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+
+.btn-nuevoEquipo {
+  color: #FF383C;
+  border: 2px solid #FF383C;
+  background-color: transparent;
+  border-radius: 20px;
+  transition: 0.5s;
+
+  &:hover, &:focus, &:active {
+    background-color: #FF383C;
+    color: white;
+    cursor: pointer;
+  }
 }

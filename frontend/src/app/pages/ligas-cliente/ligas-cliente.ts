@@ -23,6 +23,8 @@ export class LigasCliente {
   ligaSeleccionada: any = null;
   equiposDisponibles: any[] = [];
   equiposSeleccionados: any[] = [];
+  cargando: boolean=true;
+
 
 
   nuevaLiga = {
@@ -78,6 +80,8 @@ export class LigasCliente {
       next: (user) => {
 
         this.cargarLigas();
+        this.cargando = false;
+
       },
       error: () => {
 
@@ -110,24 +114,39 @@ export class LigasCliente {
   }
 
   guardarLiga() {
+    const nombreLiga = this.nuevaLiga.nombre;
 
-    if (!this.nuevaLiga.nombre) {
+    if (!nombreLiga || typeof nombreLiga !== 'string' || nombreLiga.trim() === '') {
       Swal.fire({
         icon: 'warning',
         title: 'Faltan datos',
-        text: 'Por favor rellena el nombre',
+        text: 'Por favor, introduce un nombre válido para la liga.',
         confirmButtonColor: '#d33'
       });
       return;
     }
 
+    if (nombreLiga.trim().length > 255) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Texto demasiado largo',
+        text: 'El nombre de la liga no puede superar los 255 caracteres.',
+        confirmButtonColor: '#d33'
+      });
+      return;
+    }
 
     const usuario = this.auth.usuarioActual();
 
     if (usuario && usuario.id) {
       this.nuevaLiga.id_creador = usuario.id;
     } else {
-      Swal.fire('Error', 'No se ha podido identificar al usuario', 'error');
+      Swal.fire({
+        icon: 'error',
+        title: 'Error de sesión',
+        text: 'No se ha podido identificar al usuario. Inicia sesión de nuevo.',
+        confirmButtonColor: '#d33'
+      });
       return;
     }
 
@@ -138,7 +157,7 @@ export class LigasCliente {
             icon: 'success',
             title: '¡Liga creada!',
             text: 'La liga se ha añadido correctamente.',
-            confirmButtonColor: '#3085d6',
+            confirmButtonColor: '#FF383C',
             confirmButtonText: 'Continuar'
           }).then((result) => {
             if (result.isConfirmed) {
@@ -152,16 +171,56 @@ export class LigasCliente {
             icon: 'error',
             title: 'Error',
             text: 'No se pudo guardar la liga.',
+            confirmButtonColor: '#d33'
           });
         }
       });
   }
 
   actualizarLiga() {
+    const nombreLiga = this.ligaEditada.nombre;
+
+    if (!nombreLiga || typeof nombreLiga !== 'string' || nombreLiga.trim() === '') {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Faltan datos',
+        text: 'Por favor, introduce un nombre válido para la liga.',
+        confirmButtonColor: '#d33'
+      });
+      return;
+    }
+
+    if (nombreLiga.trim().length > 255) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Texto demasiado largo',
+        text: 'El nombre de la liga no puede superar los 255 caracteres.',
+        confirmButtonColor: '#d33'
+      });
+      return;
+    }
+
     this.http.put(`http://localhost:8000/api/ligas/${this.ligaEditada.id}`, this.ligaEditada, { withCredentials: true })
       .subscribe({
-        next: () => Swal.fire('Editado', 'Liga actualizada', 'success').then(() => window.location.reload()),
-        error: () => Swal.fire('Error', 'No se pudo editar', 'error')
+        next: () => {
+          Swal.fire({
+            icon: 'success',
+            title: '¡Editado!',
+            text: 'Liga actualizada correctamente.',
+            confirmButtonColor: '#FF383C'
+          }).then(() => {
+            window.location.reload();
+          });
+        },
+        error: (err) => {
+          console.error('Error al editar:', err);
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'No se pudo editar la liga.',
+            confirmButtonColor: '#d33'
+          });
+        }
       });
   }
 
@@ -172,7 +231,7 @@ export class LigasCliente {
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#d33',
-      cancelButtonColor: '#3085d6',
+      cancelButtonColor: '#000000',
       confirmButtonText: 'Sí, eliminar',
       cancelButtonText: 'Cancelar'
     }).then((result) => {

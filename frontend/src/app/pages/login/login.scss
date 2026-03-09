@@ -1,10 +1,10 @@
-.main-container{
-  height: 50vh;
+.main-container {
+  min-height: 85vh;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-
+  padding: 100px 15px 50px 15px;
 }
 
 
@@ -17,11 +17,13 @@
 
 }
 
-.login-card{
+.login-card {
   background-color: black;
-  padding: 4rem;
+  padding: 2.5rem;
   color: #FF383C;
-
+  border-radius: 15px;
+  width: 100%;
+  max-width: 400px;
 }
 
 .btn-white{
@@ -52,4 +54,13 @@
   transition: 0.5s;
 
 }
+
+body {
+  background-image: url('/estadioLigas80.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+
 

@@ -1,5 +1,17 @@
 <app-header></app-header>
 
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Inicio de Sesión</title>
+</head>
+<body>
+
 <div class="d-flex justify-content-center align-items-center main-container" style="min-height: 80vh;">
   <div class="login-card text-center" style="max-width: 400px; width: 100%;">
     <img src="Ligas80-logo.png" class="login-logo mb-3" style="width: 120px;">
@@ -15,7 +27,6 @@
       </div>
       <div *ngIf="error" class="text-danger mb-3">{{ error }}</div>
 
-      <!-- Botones lado a lado -->
       <div class="d-flex gap-2">
         <button type="submit" class="btn btn-white flex-fill">Iniciar Sesión</button>
         <a routerLink="/register" class="btn btn-outline-red flex-fill">Regístrate</a>
@@ -23,5 +34,9 @@
     </form>
   </div>
 </div>
+
+</body>
+</html>
+
 
 <app-footer></app-footer>

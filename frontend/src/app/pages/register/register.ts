@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
-import { Auth } from '../../services/auth'; // Asegúrate que la ruta sea correcta
-import { Router } from '@angular/router';
+import { Auth } from '../../services/auth';
+import {Router, RouterLink} from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Footer } from '../../componentes/footer/footer';
@@ -9,10 +9,10 @@ import { lastValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-register',
-  templateUrl: './register.html', // Asumiendo que existe
-  styleUrls: ['./register.scss'], // Asumiendo que existe
+  templateUrl: './register.html',
+  styleUrls: ['./register.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule, Header, Footer]
+  imports: [CommonModule, FormsModule, Header, Footer, RouterLink]
 })
 export class Register {
   name = '';
@@ -39,8 +39,7 @@ export class Register {
       this.router.navigate(['/login']);
 
     } catch (err: any) {
-      console.error('Error completo:', err); // Para depurar en consola
-
+      console.error('Error completo:', err);
       if (err.status === 422) {
         this.error = 'Datos no válidos: ' + (err.error.message || '');
       } else {

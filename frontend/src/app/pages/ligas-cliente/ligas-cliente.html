@@ -1,81 +1,91 @@
+
+<body>
+<title>Ligas</title>
+
 <app-header></app-header>
 
-<div class="container mt-5 mb-5">
-
-  <h2 class="text-center mb-4">Mis Ligas</h2>
 
 
-  <div class="d-flex justify-content-end mb-3">
-    <button type="button" class="btn btn-nuevaLiga" data-bs-toggle="modal" data-bs-target="#modalCrearLiga">
-      <i class="bi bi-plus-lg"></i> Nueva Liga
-    </button>
+<div class="container mt-5 mb-5" style="min-height: 65vh;">
+
+  <div *ngIf="cargando" class="d-flex flex-column align-items-center justify-content-center h-100" style="min-height: 65vh;">
+    <div class="spinner-border text-danger" style="width: 4rem; height: 4rem;" role="status">
+      <span class="visually-hidden">Cargando...</span>
+    </div>
+    <h4 class=" loading-leagues mt-3  fw-bold">Cargando mis ligas...</h4>
   </div>
 
-  <div class="card shadow p-4">
-    <div class="table-responsive">
-      <table datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" class="table table-striped table-bordered row-border hover w-100 tabla-mis-ligas">
+  <div *ngIf="!cargando" class="animate__animated animate__fadeIn">
 
+    <h2 class=" main-title text-center mb-4">Mis Ligas</h2>
 
-        <thead class="thead-corporativo">
-        <tr>
-          <th>Nombre de la Liga</th>
-          <th>Nº Equipos</th>
-          <th class="text-center">Jornada</th>
-          <th class="text-center" style="width: 200px;">Acciones</th>
-        </tr>
-        </thead>
+    <div class="d-flex justify-content-end mb-3">
+      <button type="button" class="btn btn-nuevaLiga" data-bs-toggle="modal" data-bs-target="#modalCrearLiga">
+        <i class="bi bi-plus-lg"></i> Nueva Liga
+      </button>
+    </div>
 
-        <tbody>
-        <tr *ngFor="let l of ligas">
+    <div class="card shadow p-4">
+      <div class="table-responsive">
+        <table datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" class="table table-striped table-bordered row-border hover w-100 tabla-mis-ligas">
 
-          <td class="fw-bold" style="color: #FF383C; vertical-align: middle;">{{ l.nombre }}</td>
-          <td class="fw-bold" style="color: #FF383C; vertical-align: middle;">{{ l.n_equipos }}</td>
+          <thead class="thead-corporativo">
+          <tr>
+            <th>Nombre de la Liga</th>
+            <th>Nº Equipos</th>
+            <th class="text-center">Jornada</th>
+            <th class="text-center" style="width: 200px;">Acciones</th>
+          </tr>
+          </thead>
 
-          <td class="text-center" style="vertical-align: middle;">{{ l.jornada || 0 }}</td>
+          <tbody>
+          <tr *ngFor="let l of ligas">
 
+            <td class="fw-bold" style="color: #FF383C; vertical-align: middle;">{{ l.nombre }}</td>
+            <td class="fw-bold" style="color: #FF383C; vertical-align: middle;">{{ l.n_equipos }}</td>
 
-          <td class="text-center">
+            <td class="text-center" style="vertical-align: middle;">{{ (l.jornada || 0) > 38 ? 38 : (l.jornada || 0) }}</td>
 
+            <td class="text-center">
 
-            <button class="btn btn-success btn-md me-1"
-                    title="Añadir Equipos"
-                    data-bs-toggle="modal"
-                    data-bs-target="#modalAddEquipos"
-                    (click)="abrirModalEquipos(l)">
-              <i class="bi bi-people-fill"></i>
-            </button>
+              <button class="btn btn-success btn-md me-1"
+                      title="Añadir Equipos"
+                      data-bs-toggle="modal"
+                      data-bs-target="#modalAddEquipos"
+                      (click)="abrirModalEquipos(l)">
+                <i class="bi bi-people-fill"></i>
+              </button>
 
+              <button class="btn btn-primary btn-md me-1"
+                      [title]="l.n_equipos < 20 ? 'Faltan equipos (Necesitas 20)' : 'Jugar'"
+                      [routerLink]="l.n_equipos >= 20 ? '/ligasJuego/' + l.id : null"
+                      [disabled]="l.n_equipos < 20">
+                <i class="bi bi-play-fill"></i>
+              </button>
 
-            <button class="btn btn-primary btn-md me-1"
-                    [title]="l.n_equipos < 20 ? 'Faltan equipos (Necesitas 20)' : 'Jugar'"
-                    [routerLink]="l.n_equipos >= 20 ? '/ligasJuego/' + l.id : null"
-                    [disabled]="l.n_equipos < 20">
-              <i class="bi bi-play-fill"></i>
-            </button>
+              <button class="btn btn-warning btn-md me-1"
+                      title="Modificar"
+                      data-bs-toggle="modal"
+                      data-bs-target="#modalEditarLiga"
+                      (click)="cargarDatos(l)">
+                <i class="bi bi-pencil-square"></i>
+              </button>
 
-            <button class="btn btn-warning btn-md me-1"
-                    title="Modificar"
-                    data-bs-toggle="modal"
-                    data-bs-target="#modalEditarLiga"
-                    (click)="cargarDatos(l)">
-              <i class="bi bi-pencil-square"></i>
-            </button>
+              <button class="btn btn-danger btn-md"
+                      title="Eliminar"
+                      (click)="eliminarLiga(l.id)">
+                <i class="bi bi-trash"></i>
+              </button>
 
-            <button class="btn btn-danger btn-md"
-                    title="Eliminar"
-                    (click)="eliminarLiga(l.id)">
-              <i class="bi bi-trash"></i>
-            </button>
-
-          </td>
-        </tr>
-        </tbody>
-      </table>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
 </div>
 
-<!--  CREAR LIGA -->
 <div class="modal fade" id="modalCrearLiga" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
@@ -96,18 +106,16 @@
 
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-
-        <button type="button" class="btn btn-nuevaLiga" (click)="guardarLiga()">Crear</button>
+        <button type="button" class="btn btn-nuevaLiga-inside" (click)="guardarLiga()">Crear</button>
       </div>
     </div>
   </div>
 </div>
 
-<!--  EDITAR LIGA  -->
 <div class="modal fade" id="modalEditarLiga" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
-      <!-- Cabecera Roja -->
+
       <div class="modal-header bg-corporativo">
         <h5 class="modal-title">Editar Liga</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
@@ -124,14 +132,12 @@
 
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-
         <button type="button" class="btn btn-ligas" (click)="actualizarLiga()">Guardar Cambios</button>
       </div>
     </div>
   </div>
 </div>
 
-<!-- MODAL AÑADIR EQUIPOS  -->
 <div class="modal fade" id="modalAddEquipos" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
@@ -171,3 +177,5 @@
 </div>
 
 <app-footer></app-footer>
+
+</body>

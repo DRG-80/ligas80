@@ -22,6 +22,8 @@ export class Fichajes {
 
   jugadores: any[] = [];
   jugadoresEquipo: any[] = [];
+  cargando: boolean=true;
+
 
 
   dtOptions: Config = {};
@@ -142,6 +144,8 @@ export class Fichajes {
       .subscribe({
         next: (res) => {
           this.jugadores = res;
+          this.cargando = false;
+
           setTimeout(() => {
             if (!this.dtTriggerLibres.closed) this.dtTriggerLibres.next(null);
           }, 50);
@@ -285,7 +289,7 @@ export class Fichajes {
 
   vistaJugadoresEquipo() {
     this.fichajesEquipos = true;
-
+    this.cargando=true;
 
     this.jugadoresEquipo = [];
     this.dtTriggerEquipos = new Subject<any>();
@@ -310,7 +314,7 @@ export class Fichajes {
       .subscribe({
         next: (res) => {
           this.jugadoresEquipo = res;
-          console.log(this.jugadoresEquipo)
+          this.cargando=false;
           setTimeout(() => {
             if (!this.dtTriggerEquipos.closed) this.dtTriggerEquipos.next(null);
           }, 50);

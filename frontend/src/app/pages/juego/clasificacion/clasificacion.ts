@@ -27,6 +27,7 @@ export class Clasificacion {
   public tabla: any[] = [];
   public equipos: any[] = [];
 
+  public cargando: boolean = true;
 
 
   constructor(
@@ -203,6 +204,10 @@ export class Clasificacion {
 
       return datosB.golesFavor - datosA.golesFavor;
     });
+
+    setTimeout(() => {
+      this.cargando = false;
+    }, 800);
 
     console.log('Tabla cargada y ordenada:', this.tabla);
   }

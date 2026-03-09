@@ -20,13 +20,13 @@ import Swal from 'sweetalert2';
   standalone: true
 })
 export class Plantilla implements OnInit{
+  public cargando: boolean = true;
 
   portero: any[] = [];
   defensas: any[] = [];
   medios: any[] = [];
   delanteros: any[] = [];
   banquillo: any[] = [];
-  public cargando: boolean = true;
 
 
   dtOptions: Config = {};
@@ -121,7 +121,7 @@ export class Plantilla implements OnInit{
   }
 
   cargarMisJugadores(idLiga: number, idEquipo: number) {
-    this.cargando = true;
+
 
     this.http.get<any>(`http://localhost:8000/api/ligasEquipo/obtenerAlineacion/${idLiga}/${idEquipo}`, { withCredentials: true })
       .subscribe({

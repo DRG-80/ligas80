@@ -1,55 +1,159 @@
+$color-rojo: #FF383C;
+$color-negro: #000000;
+$color-amarillo: #ffc107;
+$color-verde: #198754;
+
+th {
+  color: $color-rojo !important;
+}
+
+h2 {
+  color: $color-rojo;
+}
+
+.bg-corporativo {
+  background-color: $color-rojo !important;
+  color: white !important;
+  border-bottom: 2px solid $color-negro;
+}
+
+#modalEditarLiga .modal-header {
+  background-color: $color-amarillo !important;
+  color: $color-negro !important;
+  border-bottom: 2px solid $color-negro;
+
+  .modal-title {
+    color: $color-negro !important;
+  }
+
+  .btn-close {
+    filter: none;
+  }
+}
 
 .btn-nuevaLiga {
-  color: black;
-  border: 2px solid black;
+  color: white;
+  border: 2px solid $color-rojo;
   background-color: transparent;
   border-radius: 20px;
   padding: 8px 16px;
   font-weight: 600;
   transition: 0.5s;
+
+  &:hover, &:focus, &:active {
+    background-color: $color-rojo !important;
+    border-color: $color-rojo !important;
+    color: white !important;
+    cursor: pointer;
+  }
 }
 
-.btn-nuevaLiga:hover {
-  background-color: black;
-  color: #FF383C;
-  cursor: pointer;
+.btn-nuevaLiga-inside {
+  color: $color-rojo;
+  border: 2px solid $color-rojo;
+  background-color: transparent;
+  border-radius: 20px;
+  padding: 8px 16px;
+  font-weight: 600;
+  transition: 0.5s;
+
+  &:hover, &:focus, &:active {
+    background-color: $color-rojo !important;
+    border-color: $color-rojo !important;
+    color: white !important;
+    cursor: pointer;
+  }
 }
 
 .btn-ligas {
-  color: #FF383C;
-  border: 2px solid #FF383C;
+  color: $color-rojo;
+  border: 2px solid $color-rojo;
   background-color: transparent;
   border-radius: 20px;
   padding: 8px 16px;
   font-weight: 600;
   transition: 0.5s;
+
+  &:hover, &:focus, &:active {
+    background-color: $color-rojo !important;
+    border-color: $color-rojo !important;
+    color: white !important;
+    cursor: pointer;
+  }
 }
 
-.btn-ligas:hover {
-  background-color: #FF383C;
+#modalEditarLiga .btn-ligas {
+  color: $color-amarillo;
+  border: 2px solid $color-amarillo;
+  background-color: transparent;
+
+  &:hover, &:focus, &:active {
+    background-color: $color-amarillo !important;
+    border-color: $color-amarillo !important;
+    color: $color-negro !important;
+  }
+}
+
+.main-title{
+  font-weight: bold;
   color: white;
-  cursor: pointer;
 }
 
+.btn-secondary {
+  color: $color-negro;
+  border: 2px solid $color-rojo;
+  background-color: transparent;
+  border-radius: 20px;
+  padding: 8px 16px;
+  font-weight: 600;
+  transition: 0.5s;
+
+  &:hover, &:focus, &:active {
+    background-color: $color-negro !important;
+    border-color: white !important;
+    color: $color-rojo !important;
+    cursor: pointer;
+  }
+}
+
+.modal-footer .btn-success {
+  color: $color-verde;
+  border: 2px solid $color-verde;
+  background-color: transparent;
+  border-radius: 20px;
+  padding: 8px 16px;
+  font-weight: 600;
+  transition: 0.5s;
+
+  &:hover, &:focus, &:active {
+    background-color: $color-verde !important;
+    border-color: $color-verde !important;
+    color: white !important;
+    cursor: pointer;
+  }
+}
 
 .btn i {
   margin-right: 5px;
 }
 
-
-
-.bg-corporativo {
-  background-color: #FF383C !important;
-  color: white !important;
-}
-
-.bg-corporativo .btn-close {
-  filter: invert(1) grayscale(100%) brightness(200%);
-}
-
 .thead-corporativo th {
-  background-color: #FF383C !important;
+  background-color: $color-rojo !important;
   color: white !important;
-  border-bottom: 2px solid black !important;
+  border-bottom: 2px solid $color-negro !important;
   vertical-align: middle;
+}
+
+body {
+  background-image: url('/estadioLigas80.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+
+.loading-leagues{
+  color: white;
+  font-weight: bold;
+
 }

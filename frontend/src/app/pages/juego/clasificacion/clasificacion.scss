@@ -59,3 +59,18 @@ $color-negro: #000;
   height: 12px;
   display: inline-block;
 }
+
+body {
+  background-image: url('/estadioLigas80.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+
+.options{
+  color: white;
+}
+.loading{
+  color: white;
+}

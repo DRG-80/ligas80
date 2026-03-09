@@ -23,6 +23,7 @@ import { Auth } from '../../services/auth';
 export class Jugadores implements OnInit, OnDestroy {
 
   jugadores: any[] = [];
+  cargando: boolean=true;
 
 
   nuevoJugador = {
@@ -52,7 +53,7 @@ export class Jugadores implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    // 1. Configuración de la tabla
+
     this.dtOptions = {
       paging: true,
       searching: true,
@@ -83,6 +84,7 @@ export class Jugadores implements OnInit, OnDestroy {
 
         if (this.auth.tieneIdNegativo()) {
           this.cargarJugadores();
+          this.cargando = false;
         } else {
           // Está logueado pero no tiene permisos (ID Positivo) -> Al Home
           this.router.navigate(['/']);
@@ -130,15 +132,62 @@ export class Jugadores implements OnInit, OnDestroy {
   }
 
   guardarJugador() {
-    if (!this.nuevoJugador.nombre || !this.nuevoJugador.apellidos) {
+    const { nombre, apellidos, posicion, media, precio } = this.nuevoJugador;
+
+
+    if (!nombre || !apellidos || !posicion || media === null || media === undefined || precio === null || precio === undefined) {
       Swal.fire({
         icon: 'warning',
         title: 'Faltan datos',
-        text: 'Por favor rellena nombre y apellidos',
+        text: 'Por favor, rellena todos los campos del formulario.',
         confirmButtonColor: '#d33'
       });
       return;
     }
+
+
+    if (nombre.toString().trim().length > 255 || apellidos.toString().trim().length > 255) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Texto demasiado largo',
+        text: 'El nombre y los apellidos no pueden superar los 255 caracteres.',
+        confirmButtonColor: '#d33'
+      });
+      return;
+    }
+
+    if (isNaN(Number(media)) || isNaN(Number(precio))) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Formato incorrecto',
+        text: 'La media y el precio deben ser valores numéricos.',
+        confirmButtonColor: '#d33'
+      });
+      return;
+    }
+
+
+    if (media < 0 || media > 99) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Media inválida',
+        text: 'La media del jugador debe estar entre 0 y 99.',
+        confirmButtonColor: '#d33'
+      });
+      return;
+    }
+
+
+    if (precio < 0 || precio > 300000000) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Precio inválido',
+        text: 'El precio no puede ser negativo ni superior a 300.000.000 €.',
+        confirmButtonColor: '#d33'
+      });
+      return;
+    }
+
 
     this.http.post('http://localhost:8000/api/jugadores', this.nuevoJugador, { withCredentials: true })
       .subscribe({
@@ -161,17 +210,88 @@ export class Jugadores implements OnInit, OnDestroy {
             icon: 'error',
             title: 'Error',
             text: 'No se pudo guardar el jugador.',
-
+            confirmButtonColor: '#d33'
           });
         }
       });
   }
 
   actualizarJugador() {
+
+    const { nombre, apellidos, posicion, media, precio } = this.jugadorEditado;
+
+    if (!nombre || !apellidos || !posicion || media === null || media === undefined || precio === null || precio === undefined) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Faltan datos',
+        text: 'Por favor, rellena todos los campos del formulario.',
+        confirmButtonColor: '#d33'
+      });
+      return;
+    }
+
+    if (nombre.toString().trim().length > 255 || apellidos.toString().trim().length > 255) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Texto demasiado largo',
+        text: 'El nombre y los apellidos no pueden superar los 255 caracteres.',
+        confirmButtonColor: '#d33'
+      });
+      return;
+    }
+
+    if (isNaN(Number(media)) || isNaN(Number(precio))) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Formato incorrecto',
+        text: 'La media y el precio deben ser valores numéricos.',
+        confirmButtonColor: '#d33'
+      });
+      return;
+    }
+
+    if (media < 0 || media > 99) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Media inválida',
+        text: 'La media del jugador debe estar entre 0 y 99.',
+        confirmButtonColor: '#d33'
+      });
+      return;
+    }
+
+    if (precio < 0 || precio > 300000000) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Precio inválido',
+        text: 'El precio no puede ser negativo ni superior a 300.000.000 €.',
+        confirmButtonColor: '#d33'
+      });
+      return;
+    }
+
+
     this.http.put(`http://localhost:8000/api/jugadores/${this.jugadorEditado.id}`, this.jugadorEditado, { withCredentials: true })
       .subscribe({
-        next: () => Swal.fire('Editado', 'Jugador actualizado', 'success').then(() => window.location.reload()),
-        error: () => Swal.fire('Error', 'No se pudo editar', 'error')
+        next: () => {
+          Swal.fire({
+            icon: 'success',
+            title: '¡Editado!',
+            text: 'Jugador actualizado correctamente.',
+            confirmButtonColor: '#3085d6'
+          }).then(() => {
+            window.location.reload();
+          });
+        },
+        error: (err) => {
+          console.error('Error al editar:', err);
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'No se pudo editar el jugador.',
+            confirmButtonColor: '#d33'
+          });
+        }
       });
   }
 
@@ -182,7 +302,7 @@ export class Jugadores implements OnInit, OnDestroy {
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#d33',
-      cancelButtonColor: '#3085d6',
+      cancelButtonColor: '#000000',
       confirmButtonText: 'Sí, eliminar',
       cancelButtonText: 'Cancelar'
     }).then((result) => {

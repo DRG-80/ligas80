@@ -1,14 +1,111 @@
+$color-rojo: #FF0000;
+$color-negro: #000000;
+$color-amarillo: #ffc107;
 
 th {
-  color: #FF0000;
+  color: $color-rojo !important;
 }
 
-.badge{
-
-  background-color: #FF0000;
+h2 {
+  color: $color-rojo;
 }
 
+.main-title{
+  color: white;
+}
 
-h2{
-  color: #FF0000;
+.modal-header {
+  background-color: $color-rojo !important;
+  border-bottom: 2px solid $color-negro;
+
+  .modal-title {
+    color: white !important;
+  }
+}
+
+.modal-header.bg-warning {
+  background-color: $color-amarillo !important;
+  .modal-title {
+    color: black !important;
+  }
+}
+
+.btn-success {
+  color: white;
+  border: 2px solid $color-rojo;
+  background-color: transparent;
+  border-radius: 20px;
+  padding: 8px 16px;
+  font-weight: 600;
+  transition: 0.5s;
+
+  &:hover, &:focus, &:active {
+    background-color: $color-rojo !important;
+    color: white !important;
+    cursor: pointer;
+  }
+}
+
+.btn-success-inside {
+  color: $color-rojo;
+  border: 2px solid $color-rojo;
+  background-color: transparent;
+  border-radius: 20px;
+  padding: 8px 16px;
+  font-weight: 600;
+  transition: 0.5s;
+
+  &:hover, &:focus, &:active {
+    background-color: $color-rojo !important;
+    color: white !important;
+    cursor: pointer;
+  }
+}
+
+.modal-footer .btn-warning {
+  color: $color-amarillo;
+  border: 2px solid $color-amarillo;
+  background-color: transparent;
+  border-radius: 20px;
+  padding: 8px 16px;
+  font-weight: 600;
+  transition: 0.5s;
+
+  &:hover, &:focus, &:active {
+    background-color: $color-amarillo !important;
+    color: black !important;
+    cursor: pointer;
+  }
+}
+
+.btn-secondary {
+  color: $color-negro;
+  border: 2px solid $color-negro;
+  background-color: transparent;
+  border-radius: 20px;
+  padding: 8px 16px;
+  font-weight: 600;
+  transition: 0.5s;
+
+  &:hover, &:focus, &:active {
+    background-color: $color-negro !important;
+    color: $color-rojo !important;
+    cursor: pointer;
+  }
+}
+
+.btn i {
+  margin-right: 5px;
+}
+
+body {
+  background-image: url('/estadioLigas80.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+
+.loading{
+  color: white;
 }

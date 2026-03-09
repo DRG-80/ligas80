@@ -83,3 +83,18 @@
   cursor: not-allowed;
   box-shadow: none;
 }
+body {
+  background-image: url('/estadioLigas80.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+
+.loading{
+  color: white;
+}
+
+.btn-text{
+  color: white;
+}

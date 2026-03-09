@@ -21,6 +21,7 @@ import {CommonModule} from '@angular/common';
 export class Equipos {
 
   equipos: any[] = [];
+  cargando: boolean=true;
 
 
   nuevoEquipo = {
@@ -76,6 +77,8 @@ export class Equipos {
       next: (user) => {
 
         this.cargarEquipos();
+        this.cargando = false;
+
       },
       error: () => {
 
@@ -105,24 +108,39 @@ export class Equipos {
   }
 
   guardarEquipo() {
+    const nombreEquipo = this.nuevoEquipo.nombre;
 
-    if (!this.nuevoEquipo.nombre) {
+    if (!nombreEquipo || nombreEquipo.trim() === '') {
       Swal.fire({
         icon: 'warning',
         title: 'Faltan datos',
-        text: 'Por favor rellena el nombre',
+        text: 'Por favor, introduce un nombre para el equipo.',
         confirmButtonColor: '#d33'
       });
       return;
     }
 
+    if (nombreEquipo.toString().trim().length > 255) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Texto demasiado largo',
+        text: 'El nombre del equipo no puede superar los 255 caracteres.',
+        confirmButtonColor: '#d33'
+      });
+      return;
+    }
 
     const usuario = this.auth.usuarioActual();
 
     if (usuario && usuario.id) {
       this.nuevoEquipo.id_creador = usuario.id;
     } else {
-      Swal.fire('Error', 'No se ha podido identificar al usuario', 'error');
+      Swal.fire({
+        icon: 'error',
+        title: 'Error de sesión',
+        text: 'No se ha podido identificar al usuario. Por favor, inicia sesión de nuevo.',
+        confirmButtonColor: '#d33'
+      });
       return;
     }
 
@@ -147,16 +165,56 @@ export class Equipos {
             icon: 'error',
             title: 'Error',
             text: 'No se pudo guardar el equipo.',
+            confirmButtonColor: '#d33'
           });
         }
       });
   }
 
   actualizarEquipo() {
+    const nombreEquipo = this.equipoEditado.nombre;
+
+    if (!nombreEquipo || nombreEquipo.trim() === '') {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Faltan datos',
+        text: 'Por favor, introduce un nombre para el equipo.',
+        confirmButtonColor: '#d33'
+      });
+      return;
+    }
+
+    if (nombreEquipo.toString().trim().length > 255) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Texto demasiado largo',
+        text: 'El nombre del equipo no puede superar los 255 caracteres.',
+        confirmButtonColor: '#d33'
+      });
+      return;
+    }
+
     this.http.put(`http://localhost:8000/api/equipos/${this.equipoEditado.id}`, this.equipoEditado, { withCredentials: true })
       .subscribe({
-        next: () => Swal.fire('Editado', 'Equipo actualizado', 'success').then(() => window.location.reload()),
-        error: () => Swal.fire('Error', 'No se pudo editar', 'error')
+        next: () => {
+          Swal.fire({
+            icon: 'success',
+            title: '¡Editado!',
+            text: 'Equipo actualizado correctamente.',
+            confirmButtonColor: '#3085d6'
+          }).then(() => {
+            window.location.reload();
+          });
+        },
+        error: (err) => {
+          console.error('Error al editar:', err);
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'No se pudo editar el equipo.',
+            confirmButtonColor: '#d33'
+          });
+        }
       });
   }
 
@@ -168,7 +226,7 @@ export class Equipos {
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#d33',
-      cancelButtonColor: '#3085d6',
+      cancelButtonColor: '#000000',
       confirmButtonText: 'Sí, eliminar',
       cancelButtonText: 'Cancelar'
     }).then((result) => {
