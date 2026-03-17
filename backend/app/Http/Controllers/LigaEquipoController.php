@@ -11,6 +11,8 @@ use App\Models\LigaEquipo;
 
 class LigaEquipoController extends Controller
 {
+
+    // Equipos que pertenecen a una liga
     public function index($id)
     {
         $equiposDisponibles = LigaEquipo::where('id_liga', $id)
@@ -42,6 +44,7 @@ class LigaEquipoController extends Controller
 
         $equiposNuevos = [];
         foreach ($request->equipos_ids as $idEquipo) {
+            // Comprueba que no estén ya
             $yaExiste = LigaEquipo::where('id_liga', $liga->id)
                 ->where('id_equipo', $idEquipo)
                 ->exists();
@@ -50,7 +53,7 @@ class LigaEquipoController extends Controller
             }
         }
 
-
+        // Comprobar que los nuevos mas lo que habia no sea mayor que 20
         $cantidadNuevos = count($equiposNuevos);
 
         if (($liga->n_equipos + $cantidadNuevos) > 20) {
@@ -61,6 +64,7 @@ class LigaEquipoController extends Controller
 
 
         $guardados = [];
+        // Se inscribien en la liga
         foreach ($equiposNuevos as $idEquipo) {
             $inscripcion = new LigaEquipo();
             $inscripcion->id_liga = $liga->id;
@@ -75,6 +79,7 @@ class LigaEquipoController extends Controller
         }
 
 
+        // Se guarda
         if ($cantidadNuevos > 0) {
             $liga->n_equipos += $cantidadNuevos;
             $liga->save();
@@ -86,6 +91,7 @@ class LigaEquipoController extends Controller
         ]);
     }
 
+    // Comprobar si hay un equipo elegido
     public function hayEquipoElegido($idLiga)
     {
 
@@ -96,6 +102,7 @@ class LigaEquipoController extends Controller
         return $existe;
     }
 
+    // Devuelve el equipo elegido
     public function obtenerEquipoElegido($id_liga)
     {
         $equipo = LigaEquipo::where('id_liga', $id_liga)
@@ -112,6 +119,7 @@ class LigaEquipoController extends Controller
         return response()->json($equipo);
     }
 
+    // Obtiene el presupuesto
     public function obtenerPresupuesto($idLiga, $idEquipo)
     {
 
@@ -126,6 +134,7 @@ class LigaEquipoController extends Controller
         ]);
     }
 
+    // Función para elegir a un equipo
     public function elegirEquipo(Request $request, $idLiga)
     {
         $request->validate([
@@ -155,11 +164,14 @@ class LigaEquipoController extends Controller
     public function guardarAlineacion(Request $request)
     {
 
+        // Buscamos la inscripción exacta del equipo en esa liga.
         $inscripcion = LigaEquipo::where('id_liga', $request->id_liga)
             ->where('id_equipo', $request->id_equipo)
             ->firstOrFail();
 
 
+        // Fusionamos los arrays de las distintas líneas en uno de titulares.
+        // El operador (?? []) previene errores fatales de tipo 'null' si el Frontend envía alguna línea vacía.
 
         $titulares = array_merge(
             $request->portero ?? [],
@@ -168,29 +180,28 @@ class LigaEquipoController extends Controller
             $request->delanteros ?? []
         );
 
-
+       // Extraemos la media
         $valoresMedia = array_column($titulares, 'media');
 
 
+        // Sumamos todas las medias extraídas.
         $sumaTotal = array_sum($valoresMedia);
 
 
         $mediaCalculada = count($valoresMedia) > 0 ? round($sumaTotal / 11, 2) : 0;
 
+        // Estructura para el json
         $alineacion = [
             'portero'    => $request->portero,
             'defensas'   => $request->defensas,
             'medios'     => $request->medios,
             'delanteros' => $request->delanteros,
-
         ];
 
 
 
-
         $inscripcion->alineacion = $alineacion;
-        $inscripcion->media=$mediaCalculada;
-
+        $inscripcion->media = $mediaCalculada;
 
         $inscripcion->update();
 
@@ -204,38 +215,42 @@ class LigaEquipoController extends Controller
             ->where('id_equipo', $idEquipo)
             ->first();
 
-
+        // Extraemos el JSON de la alineación. Si es nuevo o nulo, inicializamos un array vacío
         $datosGuardados = ($inscripcion && !empty($inscripcion->alineacion))
             ? $inscripcion->alineacion
             : [];
 
 
-
+        // Usamos array_column para sacar solo las IDs de los objetos JSON anidados
         $porteroIds    = array_column($datosGuardados['portero'] ?? [], 'id');
         $defensasIds   = array_column($datosGuardados['defensas'] ?? [], 'id');
         $mediosIds     = array_column($datosGuardados['medios'] ?? [], 'id');
         $delanterosIds = array_column($datosGuardados['delanteros'] ?? [], 'id');
 
+
+        // Obtenemos un array plano (pluck) con los IDs de todos los jugadores
         $todosMisJugadores = JugadoresEquipo::where('id_liga', $idLiga)
             ->where('id_equipo', $idEquipo)
             ->pluck('id_jugador')
             ->toArray();
 
 
+        // Agrupamos todos los titulares guardados en un solo array
         $titularesIds = array_merge($porteroIds, $defensasIds, $mediosIds, $delanterosIds);
 
-
+        // Obtener el banquillo
         $idsBanquilloReal = array_diff($todosMisJugadores, $titularesIds);
 
 
-
         return response()->json([
+
+            // Filtro extra para quitar a jugadores que ya no estén en todosMisJugadores
             'portero'    => Jugador::whereIn('id', $porteroIds)->whereIn('id', $todosMisJugadores)->get(),
             'defensas'   => Jugador::whereIn('id', $defensasIds)->whereIn('id', $todosMisJugadores)->get(),
             'medios'     => Jugador::whereIn('id', $mediosIds)->whereIn('id', $todosMisJugadores)->get(),
             'delanteros' => Jugador::whereIn('id', $delanterosIds)->whereIn('id', $todosMisJugadores)->get(),
 
-
+            // array_values resetea las claves del array asociativo que deja array_diff
             'banquillo'  => Jugador::whereIn('id', array_values($idsBanquilloReal))->get(),
         ]);
     }
@@ -249,14 +264,17 @@ class LigaEquipoController extends Controller
 
 
         $alineaciones->transform(function ($equipo) {
+
+
+            // Decodificamos
             if (!empty($equipo->alineacion) && is_string($equipo->alineacion)) {
                 $equipo->alineacion = json_decode($equipo->alineacion);
             }
 
-
             if (empty($equipo->alineacion)) {
                 $equipo->alineacion = null;
             }
+
 
             return $equipo;
         });
@@ -266,6 +284,7 @@ class LigaEquipoController extends Controller
 
     public function simularFichajes(Request $request) {
 
+        // Limite de tiempo
         set_time_limit(1200);
         $request->validate([
             'id_liga' => 'required|exists:liga,id'
@@ -293,36 +312,39 @@ class LigaEquipoController extends Controller
             'DEL' => 3
         ];
 
+        // Recorremos equipo a equipo
         foreach ($equipos as $equipo) {
 
-
+            //recorremos el esquema
             foreach ($esquema as $posicionBuscada => $cantidadNecesaria) {
 
                 $fichadosEnPosicion = 0;
 
 
 
+                // Mientras que no cumpla el cupo de cada posición
                 while ($fichadosEnPosicion < $cantidadNecesaria) {
 
 
 
 
-
+                    // Filtra por posicion y presupuesto
                     $candidatos = $jugadoresLibres->filter(function ($j) use ($posicionBuscada, $equipo) {
 
                         return trim($j->posicion) === $posicionBuscada && $j->precio <= $equipo->presupuesto && ($equipo->presupuesto-$j->precio)!=0;
                     });
 
+                    // Si no hay se sale
                     if ($candidatos->isEmpty()) {
 
                         break;
                     }
 
-
+                    // Se un índice aleatorio
                     $indiceAleatorio = $candidatos->keys()->random();
                     $jugador = $jugadoresLibres[$indiceAleatorio];
 
-
+                    // Se hace el fichaje
                     $nuevoFichaje = new JugadoresEquipo();
                     $nuevoFichaje->id_liga = $idLiga;
                     $nuevoFichaje->id_jugador = $jugador->id;
@@ -337,7 +359,7 @@ class LigaEquipoController extends Controller
 
                     $fichadosEnPosicion++;
 
-
+                    // Se saca al jugador de los jugadores libres
                     $jugadoresLibres->forget($indiceAleatorio);
                 }
             }
@@ -355,6 +377,7 @@ class LigaEquipoController extends Controller
             ];
 
 
+            // Ponemos a los jugadores en su posición
             foreach ($plantilla as $j) {
                 if ($j->posicion == 'POR') {
                     $alineacion['portero'][] = $j->id;
@@ -373,7 +396,7 @@ class LigaEquipoController extends Controller
                 }
             }
 
-
+            // Calculamos media
             $mediaEquipo = $plantilla->count() > 0 ? round($plantilla->avg('media'), 2) : 0;
 
 

@@ -72,10 +72,12 @@ export class Clasificacion {
   }
 
   comprobarPertenencia(idLiga: number, idUsuario: number) {
-    this.http.get(`http://localhost:8000/api/ligasEquipo/perteneceLigaAlUsuario/${idLiga}/${idUsuario}`, { withCredentials: true })
+    this.http.get(`https://ligas80api.drg80dev.com/api/ligasEquipo/perteneceLigaAlUsuario/${idLiga}/${idUsuario}`, {
+      withCredentials: true,
+      headers: { 'Accept': 'application/json' }
+    })
       .subscribe({
         next: (res) => {
-
           if (!res) {
             console.error('⛔ Esta liga no te pertenece o no existe');
             this.router.navigate(['/ligas']);
@@ -83,8 +85,6 @@ export class Clasificacion {
             console.log('✅ Acceso permitido');
             this.pertenencia=true;
             this.cargarDatosLiga(idLiga,this.idEquipo);
-
-
           }
         },
         error: (err) => {
@@ -94,25 +94,21 @@ export class Clasificacion {
       });
   }
 
-  cargarDatosLiga(idLiga: number, idEquipo: number) {
 
-    this.http.get<any>(`http://localhost:8000/api/ligas/obtenerDatosLiga/${idLiga}`, { withCredentials: true })
+  cargarDatosLiga(idLiga: number, idEquipo: number) {
+    this.http.get<any>(`https://ligas80api.drg80dev.com/api/ligas/obtenerDatosLiga/${idLiga}`, {
+      withCredentials: true,
+      headers: { 'Accept': 'application/json' }
+    })
       .subscribe({
         next: (datos) => {
-
-
           this.iniciada = datos.iniciada != 0;
-
           if (this.iniciada){
             this.equipos=datos.equipos;
             this.jornada = datos.jornada || 0;
-
             this.posiciones= datos.posiciones;
             this.cargarClasificacion();
-
-
           }
-
           console.log('Datos de la liga recibidos correctamente');
         },
         error: (err) => {
@@ -121,15 +117,20 @@ export class Clasificacion {
       });
   }
 
+  // Función para cargar la clasificación
   cargarClasificacion() {
+
 
     if (!this.idLiga) {
       console.error('No hay ID de liga definido');
       return;
     }
 
+
     let datosProcesados = this.posiciones;
 
+
+    // Previene errores si el payload viene serializado dos veces desde el backend
     if (typeof datosProcesados === 'string') {
       try {
         datosProcesados = JSON.parse(datosProcesados);
@@ -139,10 +140,10 @@ export class Clasificacion {
       }
     }
 
+    this.tabla = []; // Reiniciamos la tabla para evitar datos duplicados
 
 
-    this.tabla = [];
-
+    // Iteramos sobre los IDs de los equipos (
     Object.keys(datosProcesados).forEach(posiciones => {
 
       let objetoPosicion = posiciones;
@@ -154,14 +155,17 @@ export class Clasificacion {
 
       if (!objetoPosicion) return;
 
+      // Identificamos el equipo
       const idString = objetoPosicion;
-      const id = +idString;
+      const id = +idString; // Casteo a número
       const equipo = this.equipos?.find(e => e.id === id);
+
 
 
       const datos = datosProcesados[id];
       const dat = datos.split(';');
 
+      // Extraemos
       const puntos = +dat[0];
       const victorias = +dat[1];
       const empates = +dat[2];
@@ -169,8 +173,8 @@ export class Clasificacion {
       const golesFavor = +dat[4];
       const golesContra = +dat[5];
       const diferenciaGoles = +dat[6];
-      console.log(diferenciaGoles)
 
+      // Montamos la fila enriquecida para la vista HTML
       fila.push({
         equipo: equipo ? equipo : `Equipo ${id}`,
         puntos: puntos,
@@ -187,23 +191,26 @@ export class Clasificacion {
       });
     });
 
-
-
+    // Ordenación
     this.tabla.sort((a, b) => {
+      // Extraemos los datos de las filas a comparar
       const datosA = a.posicion[0];
       const datosB = b.posicion[0];
 
-
+      // Criterio 1: Mayor número de Puntos
       if (datosB.puntos !== datosA.puntos) {
         return datosB.puntos - datosA.puntos;
       }
 
+      // Criterio 2: Si hay empate a puntos,el que tenga mejor diferencia de goles
       if (datosB.diferenciaGoles !== datosA.diferenciaGoles) {
         return datosB.diferenciaGoles - datosA.diferenciaGoles;
       }
 
+      // Criterio 3: Si siguen empatados, mayor cantidad de Goles a Favor
       return datosB.golesFavor - datosA.golesFavor;
     });
+
 
     setTimeout(() => {
       this.cargando = false;

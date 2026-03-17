@@ -21,8 +21,8 @@ import Swal from 'sweetalert2';
 export class LigasCliente {
   ligas: any[] = [];
   ligaSeleccionada: any = null;
-  equiposDisponibles: any[] = [];
-  equiposSeleccionados: any[] = [];
+  equiposDisponibles: any[] = []; //Todos los equipos
+  equiposSeleccionados: any[] = []; // Variable para todos los equipos seleccionados
   cargando: boolean=true;
 
 
@@ -90,16 +90,16 @@ export class LigasCliente {
     });
   }
 
+
   cargarLigas() {
-
     const usuario = this.auth.usuarioActual();
-
-
-    this.http.get<any[]>(`http://localhost:8000/api/ligas/misLigas/${usuario.id}`, { withCredentials: true })
+    this.http.get<any[]>(`https://ligas80api.drg80dev.com/api/ligas/misLigas/${usuario.id}`, {
+      withCredentials: true,
+      headers: { 'Accept': 'application/json' }
+    })
       .subscribe({
         next: (res) => {
           this.ligas = res;
-
           if (!this.dtTrigger.closed) {
             this.dtTrigger.next(null);
           }
@@ -116,6 +116,8 @@ export class LigasCliente {
   guardarLiga() {
     const nombreLiga = this.nuevaLiga.nombre;
 
+    //Comprobaciones
+
     if (!nombreLiga || typeof nombreLiga !== 'string' || nombreLiga.trim() === '') {
       Swal.fire({
         icon: 'warning',
@@ -125,7 +127,6 @@ export class LigasCliente {
       });
       return;
     }
-
     if (nombreLiga.trim().length > 255) {
       Swal.fire({
         icon: 'warning',
@@ -135,9 +136,7 @@ export class LigasCliente {
       });
       return;
     }
-
     const usuario = this.auth.usuarioActual();
-
     if (usuario && usuario.id) {
       this.nuevaLiga.id_creador = usuario.id;
     } else {
@@ -149,8 +148,10 @@ export class LigasCliente {
       });
       return;
     }
-
-    this.http.post('http://localhost:8000/api/ligas', this.nuevaLiga, { withCredentials: true })
+    this.http.post('https://ligas80api.drg80dev.com/api/ligas', this.nuevaLiga, {
+      withCredentials: true,
+      headers: { 'Accept': 'application/json' }
+    })
       .subscribe({
         next: (res) => {
           Swal.fire({
@@ -179,7 +180,6 @@ export class LigasCliente {
 
   actualizarLiga() {
     const nombreLiga = this.ligaEditada.nombre;
-
     if (!nombreLiga || typeof nombreLiga !== 'string' || nombreLiga.trim() === '') {
       Swal.fire({
         icon: 'warning',
@@ -189,7 +189,6 @@ export class LigasCliente {
       });
       return;
     }
-
     if (nombreLiga.trim().length > 255) {
       Swal.fire({
         icon: 'warning',
@@ -199,8 +198,10 @@ export class LigasCliente {
       });
       return;
     }
-
-    this.http.put(`http://localhost:8000/api/ligas/${this.ligaEditada.id}`, this.ligaEditada, { withCredentials: true })
+    this.http.put(`https://ligas80api.drg80dev.com/api/ligas/${this.ligaEditada.id}`, this.ligaEditada, {
+      withCredentials: true,
+      headers: { 'Accept': 'application/json' }
+    })
       .subscribe({
         next: () => {
           Swal.fire({
@@ -236,7 +237,10 @@ export class LigasCliente {
       cancelButtonText: 'Cancelar'
     }).then((result) => {
       if (result.isConfirmed) {
-        this.http.delete(`http://localhost:8000/api/ligas/${id}`, { withCredentials: true })
+        this.http.delete(`https://ligas80api.drg80dev.com/api/ligas/${id}`, {
+          withCredentials: true,
+          headers: { 'Accept': 'application/json' }
+        })
           .subscribe({
             next: () => {
               Swal.fire('¡Eliminado!', 'La liga ha sido borrada.', 'success')
@@ -252,36 +256,41 @@ export class LigasCliente {
   }
 
   abrirModalEquipos(liga: any) {
+
     this.ligaSeleccionada = liga;
-    this.equiposSeleccionados = [];
+    this.equiposSeleccionados = []; // Vaciamos el array de selecciones previas
 
     const usuario = this.auth.usuarioActual();
 
     if (usuario) {
-
-      this.http.get<any[]>(`http://localhost:8000/api/equipos`, { withCredentials: true })
+      //Obtenemos el "Conjunto Total" de equipos disponibles
+      this.http.get<any[]>(`https://ligas80api.drg80dev.com/api/equipos`, {
+        withCredentials: true, // Crucial para la sesión de Laravel Sanctum
+        headers: { 'Accept': 'application/json' }
+      })
         .subscribe({
           next: (equiposTotal) => {
 
-            this.http.get<any[]>(`http://localhost:8000/api/ligasEquipo/${liga.id}`, { withCredentials: true })
+            //Obtenemos el "Conjunto de Inscritos" en esta liga
+            this.http.get<any[]>(`https://ligas80api.drg80dev.com/api/ligasEquipo/${liga.id}`, {
+              withCredentials: true,
+              headers: { 'Accept': 'application/json' }
+            })
               .subscribe({
                 next: (equiposInscritos) => {
 
 
+                  // Recorremos todos los equipos. Solo nos quedamos con aquellos que NO (!yaEstaInscrito)
+                  // coincidan con ninguna ID del array de equipos que ya están participando.
                   this.equiposDisponibles = equiposTotal.filter(miEquipo => {
-
-
                     const yaEstaInscrito = equiposInscritos.some((inscrito: any) =>
                       inscrito.id_equipo === miEquipo.id || inscrito.id === miEquipo.id
                     );
-
-                    return !yaEstaInscrito;
+                    return !yaEstaInscrito; // Si devuelve true, el equipo sobrevive al filtro y se muestra en el modal
                   });
-
                 },
                 error: (err) => console.error('Error al comprobar equipos de la liga', err)
               });
-
           },
           error: (err) => Swal.fire('Error', 'No se pudieron cargar tus equipos', 'error')
         });
@@ -289,17 +298,26 @@ export class LigasCliente {
   }
 
   guardarEquiposEnLiga() {
+
+
+    // Comprueba que se haya seleccionado un equipo
     if (this.equiposSeleccionados.length === 0) {
       Swal.fire('Atención', 'Debes seleccionar al menos un equipo', 'warning');
       return;
     }
 
+
+    // Agrupamos la información para que Laravel haga una inserción múltiple en base de datos
     const payload = {
       id_liga: this.ligaSeleccionada.id,
       equipos_ids: this.equiposSeleccionados
     };
 
-    this.http.post('http://localhost:8000/api/ligasEquipo', payload, { withCredentials: true })
+
+    this.http.post('https://ligas80api.drg80dev.com/api/ligasEquipo', payload, {
+      withCredentials: true,
+      headers: { 'Accept': 'application/json' }
+    })
       .subscribe({
         next: () => {
 

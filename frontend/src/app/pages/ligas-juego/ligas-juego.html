@@ -17,6 +17,7 @@
   <div *ngIf="!cargando" class="animate__animated animate__fadeIn">
 
 
+    <!-- Vista si no hay equipo elegido -->
     <div *ngIf="pertenencia && !elegido">
       <div class="text-center mb-4">
         <h2 class="fw-bold">Elige tu Equipo</h2>
@@ -48,6 +49,7 @@
     </div>
 
 
+    <!-- Vista si  hay equipo elegido -->
     <div *ngIf="pertenencia && elegido" class="dashboard-juego">
       <div class="text-center mb-5 mt-3">
         <h6 class="text-uppercase text-muted ls-2">Entrenando a</h6>
@@ -58,6 +60,9 @@
       </div>
 
       <div class="row justify-content-center g-4">
+
+        <!-- Opciones de juego -->
+
 
         <div class="col-md-6 col-lg-3">
           <button class="btn-menu-juego w-100 shadow-sm" [routerLink]="['/fichajes', idLiga, miEquipo.id_equipo]">

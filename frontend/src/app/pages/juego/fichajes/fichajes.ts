@@ -20,8 +20,8 @@ import Swal from 'sweetalert2';
 })
 export class Fichajes {
 
-  jugadores: any[] = [];
-  jugadoresEquipo: any[] = [];
+  jugadores: any[] = []; //jugadores libres
+  jugadoresEquipo: any[] = []; //jugadores fichados por otros equipos
   cargando: boolean=true;
 
 
@@ -36,7 +36,7 @@ export class Fichajes {
   public pertenencia: boolean = false;
   public presupuesto: number = 0;
 
-  public fichajesEquipos: boolean = false;
+  public fichajesEquipos: boolean = false; // Para controlar que tabla enseñar
 
 
 
@@ -88,6 +88,7 @@ export class Fichajes {
     const idEquipoParam = this.route.snapshot.paramMap.get('idEquipo');
 
 
+    //Comprueba que esten los ids
     if (idLigaParam && idEquipoParam) {
       this.idLiga = +idLigaParam;
       this.idEquipo= +idEquipoParam;
@@ -117,10 +118,12 @@ export class Fichajes {
   }
 
   comprobarPertenencia(idLiga: number, idUsuario: number) {
-    this.http.get(`http://localhost:8000/api/ligasEquipo/perteneceLigaAlUsuario/${idLiga}/${idUsuario}`, { withCredentials: true })
+    this.http.get(`https://ligas80api.drg80dev.com/api/ligasEquipo/perteneceLigaAlUsuario/${idLiga}/${idUsuario}`, {
+      withCredentials: true,
+      headers: { 'Accept': 'application/json' }
+    })
       .subscribe({
         next: (res) => {
-
           if (!res) {
             console.error('⛔ Esta liga no te pertenece o no existe');
             this.router.navigate(['/ligas']);
@@ -129,7 +132,6 @@ export class Fichajes {
             this.pertenencia=true;
             this.cargarJugadores();
             this.obtenerPresupuesto();
-
           }
         },
         error: (err) => {
@@ -139,13 +141,16 @@ export class Fichajes {
       });
   }
 
+  // Función para cargar los jugadores libres
   cargarJugadores() {
-    this.http.get<any[]>(`http://localhost:8000/api/jugadoresEquipo/${this.idLiga}`, { withCredentials: true })
+    this.http.get<any[]>(`https://ligas80api.drg80dev.com/api/jugadoresEquipo/${this.idLiga}`, {
+      withCredentials: true,
+      headers: { 'Accept': 'application/json' }
+    })
       .subscribe({
         next: (res) => {
           this.jugadores = res;
           this.cargando = false;
-
           setTimeout(() => {
             if (!this.dtTriggerLibres.closed) this.dtTriggerLibres.next(null);
           }, 50);
@@ -154,24 +159,23 @@ export class Fichajes {
       });
   }
 
+  // Función para obtener el presupuesto
   obtenerPresupuesto() {
-
-    this.http.get<any>(`http://localhost:8000/api/ligasEquipo/obtenerPresupuesto/${this.idLiga}/${this.idEquipo}`, { withCredentials: true })
+    this.http.get<any>(`https://ligas80api.drg80dev.com/api/ligasEquipo/obtenerPresupuesto/${this.idLiga}/${this.idEquipo}`, {
+      withCredentials: true,
+      headers: { 'Accept': 'application/json' }
+    })
       .subscribe({
         next: (res) => {
-
           this.presupuesto = res.presupuesto;
-
-
         },
         error: (err) => console.error('Error al obtener presupuesto:', err)
       });
   }
 
+  // Función para fichar
   ficharJugador(idJugador: number) {
-
     const usuario = this.auth.usuarioActual();
-
     if (usuario && usuario.id) {
       this.nuevoFichaje.id_liga = this.idLiga;
       this.nuevoFichaje.id_jugador = idJugador;
@@ -181,29 +185,28 @@ export class Fichajes {
       return;
     }
 
-
     Swal.fire({
       title: '¿Estás seguro?',
       text: "Vas a fichar a este jugador y se descontará de tu presupuesto.",
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#000',
       confirmButtonText: 'Sí, fichar',
       cancelButtonText: 'Cancelar'
     }).then((result) => {
-
-
       if (result.isConfirmed) {
-
-        this.http.post('http://localhost:8000/api/jugadoresEquipo', this.nuevoFichaje, { withCredentials: true })
+        this.http.post('https://ligas80api.drg80dev.com/api/jugadoresEquipo', this.nuevoFichaje, {
+          withCredentials: true,
+          headers: { 'Accept': 'application/json' }
+        })
           .subscribe({
             next: (res) => {
               Swal.fire({
                 icon: 'success',
                 title: '¡Fichaje Realizado!',
                 text: 'El fichaje se ha realizado correctamente.',
-                confirmButtonColor: '#3085d6',
+                confirmButtonColor: '#d33',
                 confirmButtonText: 'Continuar'
               }).then((finalResult) => {
                 if (finalResult.isConfirmed) {
@@ -213,9 +216,7 @@ export class Fichajes {
             },
             error: (err) => {
               console.error('Error al fichar:', err);
-
               const mensaje = err.error?.message || 'No se pudo fichar al jugador.';
-
               Swal.fire({
                 icon: 'error',
                 title: 'Error',
@@ -227,10 +228,9 @@ export class Fichajes {
     });
   }
 
+  // Función para clausular
   clausularJugador(idJugador: number,idEquipo: number) {
-
     const usuario = this.auth.usuarioActual();
-
     if (usuario && usuario.id) {
       this.clausulazo.id_liga = this.idLiga;
       this.clausulazo.id_jugador = idJugador;
@@ -241,29 +241,28 @@ export class Fichajes {
       return;
     }
 
-
     Swal.fire({
       title: '¿Estás seguro?',
       text: "Vas a clausular a este jugador y se descontará de tu presupuesto.",
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#000',
       confirmButtonText: 'Sí, clausular',
       cancelButtonText: 'Cancelar'
     }).then((result) => {
-
-
       if (result.isConfirmed) {
-
-        this.http.put('http://localhost:8000/api/jugadoresEquipo/clausularJugador', this.clausulazo, { withCredentials: true })
+        this.http.put('https://ligas80api.drg80dev.com/api/jugadoresEquipo/clausularJugador', this.clausulazo, {
+          withCredentials: true,
+          headers: { 'Accept': 'application/json' }
+        })
           .subscribe({
             next: (res) => {
               Swal.fire({
                 icon: 'success',
                 title: '¡Clausulazo Realizado!',
                 text: 'El clausulazo se ha realizado correctamente.',
-                confirmButtonColor: '#3085d6',
+                confirmButtonColor: '#d33',
                 confirmButtonText: 'Continuar'
               }).then((finalResult) => {
                 if (finalResult.isConfirmed) {
@@ -273,9 +272,7 @@ export class Fichajes {
             },
             error: (err) => {
               console.error('Error al clausular:', err);
-
               const mensaje = err.error?.message || 'No se pudo clausular al jugador.';
-
               Swal.fire({
                 icon: 'error',
                 title: 'Error',
@@ -309,8 +306,12 @@ export class Fichajes {
     this.cargarJugadores();
   }
 
+  // Carga los jugadores de otros equipos
   cargarJugadoresEquipo() {
-    this.http.get<any[]>(`http://localhost:8000/api/jugadoresEquipo/jugadoresEquipo/${this.idLiga}/${this.idEquipo}`, { withCredentials: true })
+    this.http.get<any[]>(`https://ligas80api.drg80dev.com/api/jugadoresEquipo/jugadoresEquipo/${this.idLiga}/${this.idEquipo}`, {
+      withCredentials: true,
+      headers: { 'Accept': 'application/json' }
+    })
       .subscribe({
         next: (res) => {
           this.jugadoresEquipo = res;

@@ -16,12 +16,15 @@ import {Auth} from './services/auth';
   styleUrl: './app.scss'
 })
 export class App  implements OnInit{
-  constructor(public router: Router) {}
 
+  // Necesario para poderlo usar en toda la aplicación
+  constructor(public router: Router) {}
+  // Inyección del servicio de autenticación
   private auth = inject(Auth);
 
   ngOnInit() {
-
+    // RECUPERACIÓN DE SESIÓN:
+    // Al cargar o recargar la página, se comprueba con el backend si el usuario tiene un token válido para restaurar su sesión automáticamente.
     this.auth.user().subscribe({
       next: (user) => console.log('✅ Sesión recuperada:', user.name),
       error: () => console.log('ℹ️ Usuario no logueado')

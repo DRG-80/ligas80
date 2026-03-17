@@ -1,0 +1,41 @@
+
+<title>Manual</title>
+<body>
+<app-header></app-header>
+
+<div class="main-content-wrapper" style="min-height: 80vh; display: flex; flex-direction: column;">
+  <div class="container mt-5 mb-5" style="flex: 1;">
+
+    <
+    <div class="text-center mb-4">
+      <h1 class="display-4 fw-bold text-uppercase titulo-rojo">Manual de Usuario</h1>
+      <p class="lead text-muted fw-bold">Toda la información para dominar Ligas80</p>
+      <div class="divider-negro mx-auto mt-3"></div>
+    </div>
+
+    <!-- Contenedor del Visor PDF -->
+    <div class="card shadow-lg border-0 rounded overflow-hidden mb-4 bg-light">
+      <iframe
+        src="manual_usuario_ligas80.pdf"
+        width="100%"
+        height="800px"
+        style="border: none;">
+
+        <div class="p-5 text-center">
+          <p class="fs-5 text-muted">Tu navegador no soporta la visualización directa de PDFs.</p>
+        </div>
+      </iframe>
+    </div>
+
+    <!-- Botón de descarga directa -->
+    <div class="text-center animate__animated animate__fadeInUp">
+      <a href="manual_usuario_ligas80.pdf" download="Manual_Ligas80.pdf" class="btn btn-danger btn-lg px-5 py-3 fw-bold shadow action-btn">
+        <i class="bi bi-file-earmark-pdf-fill me-2"></i> Descargar PDF
+      </a>
+    </div>
+
+  </div>
+</div>
+</body>
+
+<app-footer></app-footer>

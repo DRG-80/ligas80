@@ -15,20 +15,18 @@ import {Auth} from '../services/auth';
 })
 export class Home  implements OnInit{
 
+  // Servicio de autenticación
   constructor(private auth: Auth) {}
 
   ngOnInit(): void {
 
-    console.log('🔄 Verificando sesión con el servidor...');
-
+    // Se consume el método user() de Auth, esto lanza una petición a Laravel para comprobar si la cookie de sesión sigue viva.
     this.auth.user().subscribe({
       next: (userData) => {
-        console.log('✅ ÉXITO TOTAL - USUARIO LOGUEADO:', userData);
-        console.log('Nombre:', userData.name);
-        console.log('Email:', userData.email);
+
       },
       error: (err) => {
-        console.error('❌ ERROR - NO HAY SESIÓN:', err);
+
       }
     });
   }

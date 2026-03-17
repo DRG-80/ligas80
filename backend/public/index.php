@@ -1,55 +1,41 @@
 <?php
 
-use Illuminate\Contracts\Http\Kernel;
-use Illuminate\Http\Request;
+/**
+ * --- BLOQUE DE EMERGENCIA CORS PARA HOSTINGER ---
+ * Este bloque maneja los permisos antes de que Laravel arranque.
+ */
+header('Access-Control-Allow-Origin: https://drg80dev.com');
+header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
+header('Access-Control-Allow-Headers: Origin, Content-Type, Accept, Authorization, X-Requested-With, X-XSRF-TOKEN');
+header('Access-Control-Allow-Credentials: true');
+
+
+if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
+    http_response_code(200);
+    exit;
+}
+
+/**
+ * --- ARRANQUE ESTÁNDAR DE LARAVEL ---
+ */
 
 define('LARAVEL_START', microtime(true));
 
-/*
-|--------------------------------------------------------------------------
-| Check If The Application Is Under Maintenance
-|--------------------------------------------------------------------------
-|
-| If the application is in maintenance / demo mode via the "down" command
-| we will load this file so that any pre-rendered content can be shown
-| instead of starting the framework, which could cause an exception.
-|
-*/
-
+// Comprobar si la aplicación está en mantenimiento...
 if (file_exists($maintenance = __DIR__.'/../storage/framework/maintenance.php')) {
     require $maintenance;
 }
 
-/*
-|--------------------------------------------------------------------------
-| Register The Auto Loader
-|--------------------------------------------------------------------------
-|
-| Composer provides a convenient, automatically generated class loader for
-| this application. We just need to utilize it! We'll simply require it
-| into the script here so we don't need to manually load our classes.
-|
-*/
-
+// Registrar el cargador automático de Composer...
 require __DIR__.'/../vendor/autoload.php';
 
-/*
-|--------------------------------------------------------------------------
-| Run The Application
-|--------------------------------------------------------------------------
-|
-| Once we have the application, we can handle the incoming request using
-| the application's HTTP kernel. Then, we will send the response back
-| to this client's browser, allowing them to enjoy our application.
-|
-*/
-
+// Arrancar Laravel y manejar la petición...
 $app = require_once __DIR__.'/../bootstrap/app.php';
 
-$kernel = $app->make(Kernel::class);
+$kernel = $app->make(Illuminate\Contracts\Http\Kernel::class);
 
 $response = $kernel->handle(
-    $request = Request::capture()
+    $request = Illuminate\Http\Request::capture()
 )->send();
 
 $kernel->terminate($request, $response);

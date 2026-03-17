@@ -7,7 +7,8 @@ import {catchError, Observable, switchMap, tap} from 'rxjs';
 })
 export class Auth {
 
-  private baseUrl = 'http://localhost:8000';
+  //URL del servidor
+  private baseUrl = 'https://ligas80api.drg80dev.com';
   public usuarioActual = signal<any>(null);
 
   constructor(private http: HttpClient) {}
@@ -18,6 +19,7 @@ export class Auth {
   }
 
   // Login
+  // pide la cookie al servidr, si va bien, se realiza la petición
   login(email: string, password: string): Observable<any> {
     return this.getCSRF().pipe(
       switchMap(() => this.http.post(
@@ -54,31 +56,31 @@ export class Auth {
 
   // Obtener usuario autenticado
   user(): Observable<any> {
-    // Nota: Para pedir el usuario (GET) no suele hacer falta pedir CSRF antes,
-    // pero si lo dejas tampoco pasa nada malo.
+
 
     return this.http.get(`${this.baseUrl}/api/user`, { withCredentials: true }).pipe(
 
 
+      //'tap' hace que se actualice el usuario
       tap((userData: any) => {
         this.usuarioActual.set(userData);
       }),
 
-      // 3. Si da error (ej. 401 no logueado), ponemos la señal en null
+
       catchError((err) => {
         this.usuarioActual.set(null);
-        throw err; // Re-lanzamos el error para que lo vea la consola si hace falta
+        throw err;
       })
     );
   }
 
+  //Comprobar si el usuario es un administrador
   tieneIdNegativo(): boolean {
     const user = this.usuarioActual();
 
 
     if (!user) return false;
 
-    // 2. Comprobamos el ID
     return user.id < 0;
   }
 }

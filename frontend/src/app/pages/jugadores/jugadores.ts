@@ -86,7 +86,7 @@ export class Jugadores implements OnInit, OnDestroy {
           this.cargarJugadores();
           this.cargando = false;
         } else {
-          // Está logueado pero no tiene permisos (ID Positivo) -> Al Home
+          // Ha iniciado sesión pero no es admin
           this.router.navigate(['/']);
         }
       },
@@ -97,6 +97,7 @@ export class Jugadores implements OnInit, OnDestroy {
     });
   }
 
+  //Obtiene la posición y da estilo
   obtenerClasePosicion(posicion: string): string {
     switch (posicion) {
       case 'POR':
@@ -113,8 +114,12 @@ export class Jugadores implements OnInit, OnDestroy {
   }
 
   cargarJugadores() {
-
-    this.http.get<any[]>('http://localhost:8000/api/jugadores', { withCredentials: true })
+    this.http.get<any[]>('https://ligas80api.drg80dev.com/api/jugadores', {
+      withCredentials: true,
+      headers: {
+        'Accept': 'application/json'
+      }
+    })
       .subscribe({
         next: (res) => {
           this.jugadores = res;
@@ -135,6 +140,7 @@ export class Jugadores implements OnInit, OnDestroy {
     const { nombre, apellidos, posicion, media, precio } = this.nuevoJugador;
 
 
+    //Comprobaciones
     if (!nombre || !apellidos || !posicion || media === null || media === undefined || precio === null || precio === undefined) {
       Swal.fire({
         icon: 'warning',
@@ -144,7 +150,6 @@ export class Jugadores implements OnInit, OnDestroy {
       });
       return;
     }
-
 
     if (nombre.toString().trim().length > 255 || apellidos.toString().trim().length > 255) {
       Swal.fire({
@@ -156,6 +161,7 @@ export class Jugadores implements OnInit, OnDestroy {
       return;
     }
 
+    //Comprueba que sean numeros
     if (isNaN(Number(media)) || isNaN(Number(precio))) {
       Swal.fire({
         icon: 'warning',
@@ -166,7 +172,7 @@ export class Jugadores implements OnInit, OnDestroy {
       return;
     }
 
-
+    // Comrpueba que sea una media válida
     if (media < 0 || media > 99) {
       Swal.fire({
         icon: 'warning',
@@ -177,7 +183,7 @@ export class Jugadores implements OnInit, OnDestroy {
       return;
     }
 
-
+    //Comprueba que el precio este dentro del rango permitido
     if (precio < 0 || precio > 300000000) {
       Swal.fire({
         icon: 'warning',
@@ -188,8 +194,12 @@ export class Jugadores implements OnInit, OnDestroy {
       return;
     }
 
-
-    this.http.post('http://localhost:8000/api/jugadores', this.nuevoJugador, { withCredentials: true })
+    this.http.post('https://ligas80api.drg80dev.com/api/jugadores', this.nuevoJugador, {
+      withCredentials: true,
+      headers: {
+        'Accept': 'application/json'
+      }
+    })
       .subscribe({
         next: (res) => {
           Swal.fire({
@@ -217,7 +227,6 @@ export class Jugadores implements OnInit, OnDestroy {
   }
 
   actualizarJugador() {
-
     const { nombre, apellidos, posicion, media, precio } = this.jugadorEditado;
 
     if (!nombre || !apellidos || !posicion || media === null || media === undefined || precio === null || precio === undefined) {
@@ -270,8 +279,12 @@ export class Jugadores implements OnInit, OnDestroy {
       return;
     }
 
-
-    this.http.put(`http://localhost:8000/api/jugadores/${this.jugadorEditado.id}`, this.jugadorEditado, { withCredentials: true })
+    this.http.put(`https://ligas80api.drg80dev.com/api/jugadores/${this.jugadorEditado.id}`, this.jugadorEditado, {
+      withCredentials: true,
+      headers: {
+        'Accept': 'application/json'
+      }
+    })
       .subscribe({
         next: () => {
           Swal.fire({
@@ -295,6 +308,7 @@ export class Jugadores implements OnInit, OnDestroy {
       });
   }
 
+
   eliminarJugador(id: number) {
     Swal.fire({
       title: '¿Estás seguro?',
@@ -307,7 +321,13 @@ export class Jugadores implements OnInit, OnDestroy {
       cancelButtonText: 'Cancelar'
     }).then((result) => {
       if (result.isConfirmed) {
-        this.http.delete(`http://localhost:8000/api/jugadores/${id}`, { withCredentials: true })
+
+        this.http.delete(`https://ligas80api.drg80dev.com/api/jugadores/${id}`, {
+          withCredentials: true,
+          headers: {
+            'Accept': 'application/json'
+          }
+        })
           .subscribe({
             next: () => {
               Swal.fire('¡Eliminado!', 'El jugador ha sido borrado.', 'success')

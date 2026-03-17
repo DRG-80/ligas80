@@ -1,22 +1,22 @@
 import { HttpInterceptorFn } from '@angular/common/http';
 
+//Atrapa todas las peticiones y le añade las cabeceras y tokens
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
 
-  // 1. Configuramos los headers OBLIGATORIOS para que Laravel no redirija
+  // Configuración de cabeceras
   let newHeaders = req.headers
     .set('Accept', 'application/json')
-    // 👇 ESTA ES LA CLAVE NUEVA:
     .set('X-Requested-With', 'XMLHttpRequest');
 
-  // 2. Buscamos el token XSRF
+  // Busca la cookie de seguridad que Laravel genera automáticamente.
   const token = getCookie('XSRF-TOKEN');
 
-  // 3. Si existe, lo pegamos
+  // Si existe se inyecta a la cabecera
   if (token) {
     newHeaders = newHeaders.set('X-XSRF-TOKEN', decodeURIComponent(token));
   }
 
-  // 4. Clonamos y enviamos
+  // Clonación de la petición con las nuevas cabeceras
   const cloned = req.clone({
     headers: newHeaders
   });
@@ -24,7 +24,12 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   return next(cloned);
 };
 
-// Función auxiliar sin cambios...
+
+
+
+  // Lee las cookies del navegador (document.cookie), las separa y busca
+  // específicamente el valor de la cookie cuyo nombre se pasa por parámetro.
+
 function getCookie(name: string): string | null {
   const nameEQ = name + "=";
   const ca = document.cookie.split(';');

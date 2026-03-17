@@ -25,10 +25,11 @@ export class Login {
     this.error = '';
 
 
+    // Inicio de sesión
     this.auth.login(this.email, this.password).subscribe({
       next: () => {
         // Login exitoso
-        this.router.navigate(['/']); // O '/home'
+        this.router.navigate(['/']);
       },
       error: (err) => {
         console.error(err);

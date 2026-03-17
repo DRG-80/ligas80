@@ -68,6 +68,7 @@ class LigaController extends Controller
         return response()->json(['message' => 'Liga eliminada correctamente'], 200);
     }
 
+    // Obtener las ligas de un usuaro
     public function misLigas($id)
     {
         $ligas = Liga::where('id_usuario', $id)->get();
@@ -76,6 +77,7 @@ class LigaController extends Controller
 
     }
 
+    // Comprobar si una liga le pertenece al usuario
     public function perteneceLigaAlUsuario($id_liga,$id_usuario)
     {
         $pertenece = Liga::where('id', $id_liga)
@@ -85,6 +87,7 @@ class LigaController extends Controller
         return $pertenece;
     }
 
+    // Función para obtener los datos de la liga
     public function obtenerDatosLiga($idLiga)
     {
         $datos = Liga::with(['equipos' => function($query) {
@@ -181,6 +184,7 @@ class LigaController extends Controller
 
     }
 
+    // Función para iniciar la liga
     public function iniciarLiga($idLiga)
     {
 
@@ -201,6 +205,7 @@ class LigaController extends Controller
 
     }
 
+    // Función para simular las jornadas
     public function simularJornada($idLiga)
     {
 
@@ -209,6 +214,7 @@ class LigaController extends Controller
         $alineacion = is_string($ligaEquipo->alineacion) ? json_decode($ligaEquipo->alineacion, true) : $ligaEquipo->alineacion;
         $totalJugadoresAlineados = array_sum(array_map('count', $alineacion));
 
+        // Si el usuario no tiene 11 jugadores alineados
         if ($totalJugadoresAlineados != 11) {
             return response()->json([
                 'message' => 'Debes alinear exactamente a 11 jugadores para poder continuar.',
@@ -225,14 +231,18 @@ class LigaController extends Controller
         $puntos=[];
 
 
+        // Parseo
         if (is_string($enfrentamientos)) {
             $enfrentamientos = json_decode($enfrentamientos, true);
         }
 
+        // Recorre todos los enfrentamientos
         foreach ($enfrentamientos as $numJornada => $partidos){
 
+            // Si es la jornada que toca
             if ($numJornada == $jornada ){
 
+                // Recorre los encuentros
                 foreach ($partidos as $encuentro){
 
                     $equipos = explode('-', $encuentro);
@@ -244,10 +254,13 @@ class LigaController extends Controller
 
 
 
+                    // Bucle para simular los goles
                     for ($i = 0; $i < 4; $i++) {
+
 
                         $probabilidadGolL = rand(1, 100);
 
+                        // Probabilidades
                         switch (true) {
                             case ($equipoLocal->media >= 90):
 
@@ -329,6 +342,7 @@ class LigaController extends Controller
                     $puntosL=0;
                     $puntosV=0;
 
+                    // Puntuaciones
                     if ($golLocal>$golVisitante){
                         $puntosL=3;
                     }elseif ($golVisitante>$golLocal){
@@ -357,13 +371,16 @@ class LigaController extends Controller
 
         $posiciones = $liga->posiciones ? json_decode($liga->posiciones, true) : [];
 
+        // Si es la primera vez
         if ($posiciones==null){
             $posiciones=[];
 
             foreach ($idsEquipos as $equipo){
 
+                // Se cogen los puntos del equipo
                 $datosJornada=explode(';', $puntos[$equipo]);
 
+                // Se cogen los datos
                 $puntosEquipo = (int)$datosJornada[0];
                 $golesFavor= (int)$datosJornada[1];
                 $golesContra= (int)$datosJornada[2];
@@ -381,9 +398,11 @@ class LigaController extends Controller
 
 
 
+                // Se guarda con todos sus datos
                 $posiciones[$equipo]=$puntosEquipo.';'.$V.';'.$E.';'.$D.';'.$golesFavor.';'.$golesContra.';'.$diferenciaGoles;
 
             }
+
 
 
 
@@ -410,6 +429,7 @@ class LigaController extends Controller
 
                 $datosActuales = explode(';', $datosActualesStr);
 
+                // Le suma los datos a los que ya tenía
                 $puntosActuales  = (int)$datosActuales[0] + $puntosEquipo;
                 $victorias       = (int)$datosActuales[1] + $V;
                 $empates         = (int)$datosActuales[2] + $E;
@@ -428,6 +448,7 @@ class LigaController extends Controller
         }
 
 
+        // Ordenar la clasificación
         uasort($posiciones, function ($a, $b) {
 
 
@@ -459,6 +480,8 @@ class LigaController extends Controller
 
     }
 
+    // Obtener los resultados
+
     public function obtenerResultados($idLiga)
     {
 
@@ -477,6 +500,7 @@ class LigaController extends Controller
 
     }
 
+    // Terminar jornada
     public function terminarJornada($idLiga)
     {
         $liga = Liga::findOrFail($idLiga);

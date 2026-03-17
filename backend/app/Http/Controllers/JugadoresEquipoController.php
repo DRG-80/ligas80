@@ -16,7 +16,7 @@ class JugadoresEquipoController extends Controller
     {
 
         $idsJugadoresOcupados = JugadoresEquipo::where('id_liga', $idLiga)
-            ->pluck('id_jugador');
+            ->pluck('id_jugador');// Saca los id solamente
 
         $jugadoresLibres = Jugador::whereNotIn('id', $idsJugadoresOcupados)
             ->get();
@@ -24,6 +24,7 @@ class JugadoresEquipoController extends Controller
         return response()->json($jugadoresLibres);
     }
 
+    // Obtener los jugadores fichados por otros equipos
     public function jugadoresEquipo($idLiga, $idEquipo)
     {
 
@@ -37,6 +38,7 @@ class JugadoresEquipoController extends Controller
         return response()->json($jugadoresOtrosEquipos);
     }
 
+    // Fichar un jugador para un equipo
     public function store(Request $request)
     {
         $request->validate([
@@ -82,6 +84,7 @@ class JugadoresEquipoController extends Controller
         ]);
     }
 
+    // Obteenr los jugadores del equipo elegido por el usuario
     public function obtenerMisJugadores($idLiga, $idEquipo)
     {
         $jugadores = JugadoresEquipo::where('id_liga', $idLiga)
@@ -136,16 +139,20 @@ class JugadoresEquipoController extends Controller
 
 
 
+        // Sacamos la alineación
         $alineacion = is_string($equipoB->alineacion) ? json_decode($equipoB->alineacion, true) : $equipoB->alineacion;
 
 
         $lineas = ['portero', 'defensas', 'medios', 'delanteros'];
 
 
+        // Sacamos al jugador de la alineación
+        // Se recorre cada posicion
         foreach ($lineas as $linea) {
             if (isset($alineacion[$linea]) && is_array($alineacion[$linea])) {
 
 
+                // Filtra y mete a todos los jugadores cuyo id no sea el de $request->id_jugador
                 $alineacion[$linea] = array_filter($alineacion[$linea], function ($idAlineado) use ($request) {
                     return $idAlineado != $request->id_jugador;
                 });
@@ -158,13 +165,14 @@ class JugadoresEquipoController extends Controller
 
 
 
+        // Obtenemos la posición del jugador clausulado
         $jugador = Jugador::where('id', $request->id_jugador)->first();
         $posicion = $jugador->posicion;
 
         $idLiga = $request->id_liga;
 
 
-
+        // Se busca un nuevo jugador aleatorio libre de la misma posición, y que pueda ser pagado
         $nuevoJugadorLibre = Jugador::where('posicion', $posicion)
             ->where('precio', '<=', $equipoB->presupuesto)
             ->whereNotIn('id', function ($query) use ($idLiga) {
@@ -180,6 +188,7 @@ class JugadoresEquipoController extends Controller
 
         if ($nuevoJugadorLibre && ($equipoB->presupuesto - $nuevoJugadorLibre->precio) >= 0) {
 
+            // Se realiza el fichaje
             $nuevoFichaje = new JugadoresEquipo();
             $nuevoFichaje->id_liga = $idLiga;
             $nuevoFichaje->id_equipo = $request->id_equipo_b;
@@ -201,6 +210,7 @@ class JugadoresEquipoController extends Controller
 
 
 
+            // Se mete al nuevo jugador en la alineación en su posición
             if ($claveSustitucion && isset($alineacion[$claveSustitucion])) {
                 $alineacion[$claveSustitucion][] = [$nuevoJugadorLibre->id,];
             }
@@ -208,7 +218,7 @@ class JugadoresEquipoController extends Controller
 
 
 
-
+        // Se actualiza la media
         $plantilla = JugadoresEquipo::with('jugador')
             ->where('id_equipo', $request->id_equipo_b)
             ->where('id_liga', $idLiga)
@@ -253,9 +263,11 @@ class JugadoresEquipoController extends Controller
 
 
         $jugador->delete();
+        // Al vender, recuperas un 75% del valor del jugador
         $equipo->presupuesto += ($precio * 0.75);
 
 
+        // Lo sacamos de la alineación
         $alineacion = is_string($equipo->alineacion) ? json_decode($equipo->alineacion, true) : $equipo->alineacion;
         $lineas = ['portero', 'defensas', 'medios', 'delanteros'];
 
@@ -263,6 +275,7 @@ class JugadoresEquipoController extends Controller
             if (isset($alineacion[$linea]) && is_array($alineacion[$linea])) {
 
 
+                //Pasan el filtro los que no tengan el id del jugador
                 $alineacion[$linea] = array_filter($alineacion[$linea], function ($jugadorAlineado) use ($idJugador) {
 
 
@@ -270,11 +283,13 @@ class JugadoresEquipoController extends Controller
 
                 });
 
+                // Se guarda la alineación sin el jugador
                 $alineacion[$linea] = array_values($alineacion[$linea]);
             }
         }
 
 
+        // Se actualiza la media
         $plantilla = JugadoresEquipo::with('jugador')
             ->where('id_equipo', $idEquipo)
             ->where('id_liga', $idLiga)

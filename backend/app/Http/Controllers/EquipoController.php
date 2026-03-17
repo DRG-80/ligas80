@@ -25,11 +25,16 @@ class EquipoController extends Controller
     public function store(Request $request)
     {
 
+        // Valida que no haya un equipo con mismo nombre
         $request->validate([
-            'nombre' => 'required',
+            'nombre' => 'required|unique:equipo,nombre',
             'id_creador' => 'required'
+        ], [
 
+            'nombre.unique' => 'Ya existe un equipo registrado con ese nombre.',
+            'nombre.required' => 'El nombre del equipo es obligatorio.'
         ]);
+
 
         $equipo = new Equipo();
         $equipo->id_usuario = $request->id_creador;
@@ -38,7 +43,6 @@ class EquipoController extends Controller
         $equipo->save();
 
         return response()->json($equipo);
-
     }
 
 
@@ -46,14 +50,17 @@ class EquipoController extends Controller
 
     public function update(Request $request, $id)
     {
-
         $equipo = Equipo::findOrFail($id);
 
         $request->validate([
-            'nombre' => 'required',
-
+            'nombre' => 'required|unique:equipo,nombre,' . $id,
+        ], [
+            'nombre.required' => 'El nombre del equipo es obligatorio.',
+            'nombre.unique' => 'Ya existe otro equipo con ese nombre.'
         ]);
+
         $equipo->update($request->all());
+
         return response()->json($equipo);
     }
 
@@ -65,6 +72,7 @@ class EquipoController extends Controller
         return response()->json(['message' => 'Equipo eliminado correctamente'], 200);
     }
 
+    // Función para obtener los equipos creados por el usuario
     public function misEquipos($id)
     {
 

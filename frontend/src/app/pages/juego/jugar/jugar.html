@@ -1,5 +1,5 @@
 
-<title>juego</title>
+<title>Juego</title>
 <body>
 <app-header></app-header>
 
@@ -17,6 +17,8 @@
 
     <div *ngIf="!cargando && pertenencia" class="animate__animated animate__fadeIn">
 
+
+      <!--(Liga NO iniciada)-->
 
       <div *ngIf="!iniciada" class="pretemporada-container">
 
@@ -80,9 +82,9 @@
       </div>
 
 
-      <!-- ============================================== -->
-      <!-- VISTA COMPETICIÓN (Liga SÍ iniciada)             -->
-      <!-- ============================================== -->
+
+      <!-- Liga SÍ iniciada -->
+
       <div *ngIf="iniciada" class="competicion-container animate__animated animate__fadeIn">
 
         <div class="text-center mb-5">

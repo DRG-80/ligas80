@@ -23,6 +23,7 @@ export class Register {
 
   constructor(private auth: Auth, private router: Router) {}
 
+  // Registro
   async submit() {
     this.error = null;
 

@@ -87,8 +87,12 @@ export class Ligas {
   }
 
   cargarLigas() {
-
-    this.http.get<any[]>('http://localhost:8000/api/ligas', { withCredentials: true })
+    this.http.get<any[]>('https://ligas80api.drg80dev.com/api/ligas', {
+      withCredentials: true,
+      headers: {
+        'Accept': 'application/json'
+      }
+    })
       .subscribe({
         next: (res) => {
           this.ligas = res;
@@ -118,7 +122,6 @@ export class Ligas {
       return;
     }
 
-
     const usuario = this.auth.usuarioActual();
 
     if (usuario && usuario.id) {
@@ -128,14 +131,19 @@ export class Ligas {
       return;
     }
 
-    this.http.post('http://localhost:8000/api/ligas', this.nuevaLiga, { withCredentials: true })
+    this.http.post('https://ligas80api.drg80dev.com/api/ligas', this.nuevaLiga, {
+      withCredentials: true,
+      headers: {
+        'Accept': 'application/json'
+      }
+    })
       .subscribe({
         next: (res) => {
           Swal.fire({
             icon: 'success',
             title: '¡Liga creada!',
             text: 'La liga se ha añadido correctamente.',
-            confirmButtonColor: '#3085d6',
+            confirmButtonColor: '#d33',
             confirmButtonText: 'Continuar'
           }).then((result) => {
             if (result.isConfirmed) {
@@ -161,12 +169,18 @@ export class Ligas {
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#d33',
-      cancelButtonColor: '#3085d6',
+      cancelButtonColor: '#000000',
       confirmButtonText: 'Sí, eliminar',
       cancelButtonText: 'Cancelar'
     }).then((result) => {
       if (result.isConfirmed) {
-        this.http.delete(`http://localhost:8000/api/ligas/${id}`, { withCredentials: true })
+
+        this.http.delete(`https://ligas80api.drg80dev.com/api/ligas/${id}`, {
+          withCredentials: true,
+          headers: {
+            'Accept': 'application/json'
+          }
+        })
           .subscribe({
             next: () => {
               Swal.fire('¡Eliminado!', 'La liga ha sido borrada.', 'success')

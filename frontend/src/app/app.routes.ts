@@ -13,12 +13,15 @@ import {Fichajes} from './pages/juego/fichajes/fichajes';
 import {Plantilla} from './pages/juego/plantilla/plantilla';
 import {Jugar} from './pages/juego/jugar/jugar';
 import {Clasificacion} from './pages/juego/clasificacion/clasificacion';
+import {Manual} from './pages/manual/manual';
 
 
+//Rutas de la aplicación
 export const routes: Routes = [
   { path: '', component: Home },
   { path: 'login', component: Login },
   { path: 'register', component: Register },
+  { path: 'manual', component: Manual },
   { path: 'equiposCliente', component: EquiposCliente },
   { path: 'ligasCliente', component: LigasCliente },
   { path: 'ligasJuego/:id', component: LigasJuego },
@@ -31,7 +34,7 @@ export const routes: Routes = [
 
 
 
-
+  // Rutas de administrador protegidas
   {
     path: 'jugadores',
     component: Jugadores,

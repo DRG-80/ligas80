@@ -37,6 +37,7 @@ export class Equipos {
 
   };
 
+
   dtOptions: Config = {};
   dtTrigger: Subject<any> = new Subject<any>();
 
@@ -48,6 +49,7 @@ export class Equipos {
 
   ngOnInit(): void {
 
+    // Opciones de la tabla
     this.dtOptions = {
       paging: true,
       searching: true,
@@ -72,6 +74,7 @@ export class Equipos {
     this.verificarSesionYCargar();
   }
 
+  // Comprueba de que haya un usuario iniciado
   verificarSesionYCargar() {
     this.auth.user().subscribe({
       next: (user) => {
@@ -87,13 +90,20 @@ export class Equipos {
     });
   }
 
+  //Carga los equipos
   cargarEquipos() {
-
-    this.http.get<any[]>('http://localhost:8000/api/equipos', { withCredentials: true })
+    this.http.get<any[]>('https://ligas80api.drg80dev.com/api/equipos', {
+      withCredentials: true,
+      headers: {
+        'Accept': 'application/json'
+      }
+    })
       .subscribe({
         next: (res) => {
           this.equipos = res;
 
+
+          // Notifica a DataTables que ya puede renderizar la tabla  asegurándose primero de que el usuario no haya cambiado de vista
           if (!this.dtTrigger.closed) {
             this.dtTrigger.next(null);
           }
@@ -102,14 +112,19 @@ export class Equipos {
       });
   }
 
+  //Carga los datos del equipo que se va a editar
   cargarDatos(equipo: any) {
 
     this.equipoEditado = { ...equipo };
   }
 
   guardarEquipo() {
+
     const nombreEquipo = this.nuevoEquipo.nombre;
 
+    //Comprobaciones
+
+    //Si alguno de los campos está vacío
     if (!nombreEquipo || nombreEquipo.trim() === '') {
       Swal.fire({
         icon: 'warning',
@@ -120,6 +135,7 @@ export class Equipos {
       return;
     }
 
+    //Si supera los 255 caracteres
     if (nombreEquipo.toString().trim().length > 255) {
       Swal.fire({
         icon: 'warning',
@@ -132,6 +148,7 @@ export class Equipos {
 
     const usuario = this.auth.usuarioActual();
 
+    //Si hay un usuario y su id, se le asigna ese id de creador al equipo
     if (usuario && usuario.id) {
       this.nuevoEquipo.id_creador = usuario.id;
     } else {
@@ -144,14 +161,20 @@ export class Equipos {
       return;
     }
 
-    this.http.post('http://localhost:8000/api/equipos', this.nuevoEquipo, { withCredentials: true })
+    //Petición al servidor
+    this.http.post('https://ligas80api.drg80dev.com/api/equipos', this.nuevoEquipo, {
+      withCredentials: true,
+      headers: {
+        'Accept': 'application/json'
+      }
+    })
       .subscribe({
         next: (res) => {
           Swal.fire({
             icon: 'success',
             title: '¡Equipo creado!',
             text: 'El equipo se ha añadido correctamente.',
-            confirmButtonColor: '#3085d6',
+            confirmButtonColor: '#d33',
             confirmButtonText: 'Continuar'
           }).then((result) => {
             if (result.isConfirmed) {
@@ -171,6 +194,7 @@ export class Equipos {
       });
   }
 
+  //Actualizar equipo
   actualizarEquipo() {
     const nombreEquipo = this.equipoEditado.nombre;
 
@@ -194,14 +218,19 @@ export class Equipos {
       return;
     }
 
-    this.http.put(`http://localhost:8000/api/equipos/${this.equipoEditado.id}`, this.equipoEditado, { withCredentials: true })
+    this.http.put(`https://ligas80api.drg80dev.com/api/equipos/${this.equipoEditado.id}`, this.equipoEditado, {
+      withCredentials: true,
+      headers: {
+        'Accept': 'application/json'
+      }
+    })
       .subscribe({
         next: () => {
           Swal.fire({
             icon: 'success',
             title: '¡Editado!',
             text: 'Equipo actualizado correctamente.',
-            confirmButtonColor: '#3085d6'
+            confirmButtonColor: '#d33'
           }).then(() => {
             window.location.reload();
           });
@@ -219,6 +248,7 @@ export class Equipos {
   }
 
 
+  //Eliminar equipo
   eliminarEquipo(id: number) {
     Swal.fire({
       title: '¿Estás seguro?',
@@ -231,7 +261,13 @@ export class Equipos {
       cancelButtonText: 'Cancelar'
     }).then((result) => {
       if (result.isConfirmed) {
-        this.http.delete(`http://localhost:8000/api/equipos/${id}`, { withCredentials: true })
+
+        this.http.delete(`https://ligas80api.drg80dev.com/api/equipos/${id}`, {
+          withCredentials: true,
+          headers: {
+            'Accept': 'application/json'
+          }
+        })
           .subscribe({
             next: () => {
               Swal.fire('¡Eliminado!', 'El equipo ha sido borrado.', 'success')
@@ -246,6 +282,7 @@ export class Equipos {
     });
   }
 
+// se cierra la suscripción de DataTables para evitar fugas de memoria
   ngOnDestroy(): void {
     this.dtTrigger.unsubscribe();
   }

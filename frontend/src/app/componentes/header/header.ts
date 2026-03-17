@@ -16,6 +16,7 @@ export class Header {
   private router = inject(Router);
   menuAbierto = false;
 
+  //Comprobar si tiene iniciado sesión
   estaLogueado(): boolean {
 
     if (this.auth.usuarioActual()!=null){
@@ -26,11 +27,12 @@ export class Header {
 
   }
 
+  //Cerrar sesión
   logout() {
     this.auth.logout().subscribe({
       next: () => {
 
-        window.location.href = '/';
+        window.location.href = '/ligas80/';
 
 
       },
@@ -38,6 +40,8 @@ export class Header {
         console.error('Error al cerrar sesión', err);
 
         this.auth.usuarioActual.set(null);
+        window.location.href = '/ligas80/';
+
       }
     });
   }

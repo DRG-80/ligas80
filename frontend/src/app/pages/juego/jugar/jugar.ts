@@ -18,9 +18,9 @@ import Swal from 'sweetalert2';
 })
 export class Jugar {
 
-  iniciada: boolean =false;
-  fichajesEquipos: boolean =false;
-  enfrentamientos: boolean =false;
+  iniciada: boolean =false; //Necesario para saber que vista enseñar
+  fichajesEquipos: boolean =false; // Variable para saber si se han echo los fichajes
+  enfrentamientos: boolean =false; // Variable para saber si se han generado los encuentros
 
   public cargando: boolean = true;
 
@@ -79,10 +79,12 @@ export class Jugar {
   }
 
   comprobarPertenencia(idLiga: number, idUsuario: number) {
-    this.http.get(`http://localhost:8000/api/ligasEquipo/perteneceLigaAlUsuario/${idLiga}/${idUsuario}`, { withCredentials: true })
+    this.http.get(`https://ligas80api.drg80dev.com/api/ligasEquipo/perteneceLigaAlUsuario/${idLiga}/${idUsuario}`, {
+      withCredentials: true,
+      headers: { 'Accept': 'application/json' }
+    })
       .subscribe({
         next: (res) => {
-
           if (!res) {
             console.error('⛔ Esta liga no te pertenece o no existe');
             this.router.navigate(['/ligas']);
@@ -90,8 +92,6 @@ export class Jugar {
             console.log('✅ Acceso permitido');
             this.pertenencia=true;
             this.cargarDatosLiga(idLiga,this.idEquipo);
-
-
           }
         },
         error: (err) => {
@@ -101,26 +101,29 @@ export class Jugar {
       });
   }
 
+  // Función para cargar los datos de la liga
   cargarDatosLiga(idLiga: number, idEquipo: number) {
-
-    this.http.get<any>(`http://localhost:8000/api/ligas/obtenerDatosLiga/${idLiga}`, { withCredentials: true })
+    this.http.get<any>(`https://ligas80api.drg80dev.com/api/ligas/obtenerDatosLiga/${idLiga}`, {
+      withCredentials: true,
+      headers: { 'Accept': 'application/json' }
+    })
       .subscribe({
         next: (datos) => {
-
-
           this.iniciada = datos.iniciada != 0;
           this.enfrentamientos = datos.enfrentamientos !== null ? datos.enfrentamientos : false;
+          // Si la liga está iniciada
           if (this.iniciada){
             this.equipos=datos.equipos;
             this.jornada = datos.jornada || 0;
 
+            // Si está terminada
             if (this.jornada==39){
-
               this.router.navigate([`/clasificacion/${idLiga}`]);
             }
 
             let resultados= datos.resultados;
 
+            // Parsea los datos
             if (typeof resultados === 'string') {
               try {
                 resultados = JSON.parse(resultados);
@@ -129,39 +132,35 @@ export class Jugar {
               }
             }
 
+            // Si se ha jugado la jornada, pero no se ha avanzado a la siguiente
             if (resultados && resultados[this.jornada]){
-              //console.log('Jornada Datos ' + datos.resultados[this.jornada])
               this.mostrarResultados();
+
             }else {
+              // Carga los encuentros
               this.cargarEncuentros(datos.enfrentamientos);
             }
-
-
           }
-
 
           if (this.jornada !== null) {
             this.vs = this.jornada - 1;
           }
 
-          this.http.get<any>(`http://localhost:8000/api/ligasEquipo/obtenerAlineaciones/${idLiga}`, { withCredentials: true })
+          //Obtener las alineaciones, necesario para saber que todos los equipos tienen jugadores
+          this.http.get<any>(`https://ligas80api.drg80dev.com/api/ligasEquipo/obtenerAlineaciones/${idLiga}`, {
+            withCredentials: true,
+            headers: { 'Accept': 'application/json' }
+          })
             .subscribe({
               next: (alineaciones: any) => {
-
-
                 if (alineaciones && alineaciones.length > 0) {
-
-
                   this.fichajesEquipos = alineaciones.every((equipo: any) => equipo.alineacion !== null);
                 } else {
-
                   this.fichajesEquipos = false;
                 }
-
                 setTimeout(() => {
                   this.cargando = false;
                 }, 800);
-
               },
               error: (error) => {
                 console.error('Error cargando las alineaciones:', error);
@@ -176,8 +175,8 @@ export class Jugar {
       });
   }
 
+  // Función para iniciar la liga
   iniciarLiga() {
-
     Swal.fire({
       title: '¿Iniciar la Liga?',
       text: "Una vez iniciada, comenzará la competición oficial.",
@@ -188,13 +187,12 @@ export class Jugar {
       confirmButtonText: 'Sí, ¡que empiece!',
       cancelButtonText: 'Cancelar'
     }).then((result) => {
-
       if (result.isConfirmed) {
-
-
         const payload = { iniciada: true };
-
-        this.http.put(`http://localhost:8000/api/ligas/iniciar/${this.idLiga}`, payload, { withCredentials: true })
+        this.http.put(`https://ligas80api.drg80dev.com/api/ligas/iniciar/${this.idLiga}`, payload, {
+          withCredentials: true,
+          headers: { 'Accept': 'application/json' }
+        })
           .subscribe({
             next: () => {
               Swal.fire(
@@ -202,7 +200,6 @@ export class Jugar {
                 'La competición ha comenzado.',
                 'success'
               ).then(() => {
-
                 window.location.reload();
               });
             },
@@ -215,13 +212,12 @@ export class Jugar {
     });
   }
 
+  // Función para simular los fichajes
   simularFichajes() {
-
     if (!this.idLiga) {
       console.error('No hay ID de liga cargado');
       return;
     }
-
 
     Swal.fire({
       title: '¿Simular Mercado de Fichajes?',
@@ -233,10 +229,7 @@ export class Jugar {
       confirmButtonText: 'Simular',
       cancelButtonText: 'Cancelar'
     }).then((result) => {
-
       if (result.isConfirmed) {
-
-
         Swal.fire({
           title: 'Simulando...',
           text: 'Fichando jugadores para el resto de equipos',
@@ -250,19 +243,18 @@ export class Jugar {
           id_liga: this.idLiga
         };
 
-
-        this.http.put('http://localhost:8000/api/ligasEquipo/simularFichajes', payload, { withCredentials: true })
+        this.http.put('https://ligas80api.drg80dev.com/api/ligasEquipo/simularFichajes', payload, {
+          withCredentials: true,
+          headers: { 'Accept': 'application/json' }
+        })
           .subscribe({
             next: (res: any) => {
-
               Swal.fire({
                 icon: 'success',
                 title: '¡Fichajes Realizados!',
                 text: 'El resto de equipos ya tienen realizados sus fichajes',
                 confirmButtonColor: '#FF383C'
               });
-
-
               this.fichajesEquipos = true;
             },
             error: (err) => {
@@ -278,8 +270,8 @@ export class Jugar {
     });
   }
 
+  // Función para generar los enfrentamientos
   generarEnfrentamientos() {
-
     Swal.fire({
       title: '¿Generar Calendario?',
       text: "Se crearán los enfrentamientos de ida y vuelta para todos los equipos.",
@@ -290,33 +282,29 @@ export class Jugar {
       confirmButtonText: 'Sí, generar',
       cancelButtonText: 'Cancelar'
     }).then((result) => {
-
       if (result.isConfirmed) {
-
-
         Swal.fire({
           title: 'Generando cruces...',
           text: 'Por favor, espera.',
           allowOutsideClick: false,
+          // Spinner de carga
           didOpen: () => {
             Swal.showLoading();
           }
         });
 
-
-        this.http.put(`http://localhost:8000/api/ligas/generarCalendario/${this.idLiga}`, {}, { withCredentials: true })
+        this.http.put(`https://ligas80api.drg80dev.com/api/ligas/generarCalendario/${this.idLiga}`, {}, {
+          withCredentials: true,
+          headers: { 'Accept': 'application/json' }
+        })
           .subscribe({
             next: (res: any) => {
-
-
               Swal.fire({
                 icon: 'success',
                 title: '¡Calendario Listo!',
                 text: 'Los enfrentamientos se han generado correctamente.',
                 confirmButtonColor: '#FF383C'
               });
-
-
               this.enfrentamientos = true;
             },
             error: (err) => {
@@ -332,15 +320,18 @@ export class Jugar {
     });
   }
 
+
+  // Función para cargar los encuentros
   cargarEncuentros(enfrentamientos: any) {
-    this.encuentros = [];
+    this.encuentros = []; // Vaciamos el estado previo para evitar duplicados
 
 
     if (!enfrentamientos) return;
 
-
     let datosProcesados = enfrentamientos;
 
+
+    // Evaluamos si el payload nos ha llegado serializado como texto.
     if (typeof datosProcesados === 'string') {
       try {
         datosProcesados = JSON.parse(datosProcesados);
@@ -350,42 +341,45 @@ export class Jugar {
       }
     }
 
-
+    // Iteración por jornadas
     Object.keys(datosProcesados).forEach(jornada => {
 
       const numeroJornada = parseInt(jornada);
       let partidosStrings = datosProcesados[jornada];
 
-
+      // Doble validación: a veces los arrays anidados en BD también se serializan como string
       if (typeof partidosStrings === 'string') {
         try { partidosStrings = JSON.parse(partidosStrings); } catch(e) {}
       }
 
-
+      // Aseguramos que es un array iterable antes de continuar
       if (!Array.isArray(partidosStrings)) return;
 
       const partidosDeLaJornada: any[] = [];
 
+
+      // Recorremos el array de encuentros
       partidosStrings.forEach((cruce: string) => {
 
         const ids = cruce.split('-');
         const idLocal = +ids[0];
         const idVisitante = +ids[1];
 
-        // Buscamos los nombres de los equipos con find
+
+        // Buscamos el objeto de equipo completo para obtener el nombre real a partir de la ID
         const equipoLocal = this.equipos?.find(e => e.id === idLocal);
         const equipoVisitante = this.equipos?.find(e => e.id === idVisitante);
 
-
+        // Construimos el encuentro para el html
         partidosDeLaJornada.push({
           idLocal: idLocal,
           idVisitante: idVisitante,
           local: equipoLocal ? equipoLocal.nombre : `Equipo ${idLocal}`,
           visitante: equipoVisitante ? equipoVisitante.nombre : `Equipo ${idVisitante}`,
-
         });
       });
 
+      // Guardamos la jornada completa en la estructura principal
       this.encuentros.push({
         jornada: numeroJornada,
         partidos: partidosDeLaJornada
@@ -393,18 +387,18 @@ export class Jugar {
     });
 
 
+    // Ordena las jornadas
     this.encuentros.sort((a, b) => a.jornada - b.jornada);
 
-    console.log('Calendario cargado:', this.encuentros);
+
   }
 
+  // Función para simular la jornada
   simularJornada() {
-
     if (!this.idLiga) {
       console.error('No hay liga seleccionada');
       return;
     }
-
 
     Swal.fire({
       title: `¿Simular Jornada ${this.jornada}?`,
@@ -416,10 +410,7 @@ export class Jugar {
       confirmButtonText: 'Sí, jugar',
       cancelButtonText: 'Cancelar'
     }).then((result) => {
-
       if (result.isConfirmed) {
-
-
         Swal.fire({
           title: 'Jugando partidos...',
           text: 'Calculando resultados...',
@@ -429,24 +420,20 @@ export class Jugar {
           }
         });
 
-
-        this.http.put(`http://localhost:8000/api/ligas/simularJornada/${this.idLiga}`, {}, { withCredentials: true })
+        this.http.put(`https://ligas80api.drg80dev.com/api/ligas/simularJornada/${this.idLiga}`, {}, {
+          withCredentials: true,
+          headers: { 'Accept': 'application/json' }
+        })
           .subscribe({
             next: (res: any) => {
-
-              // 4. Éxito
               Swal.fire({
                 icon: 'success',
                 title: '¡Jornada Finalizada!',
                 text: 'Los resultados se han guardado correctamente.',
                 confirmButtonColor: '#FF383C'
               }).then(() => {
-
                 this.mostrarResultados();
-                //window.location.reload();
-
               });
-
             },
             error: (err) => {
               console.error('Error al simular:', err);
@@ -461,6 +448,7 @@ export class Jugar {
     });
   }
 
+  // Función para los resultados
   mostrarResultados() {
 
 
@@ -470,19 +458,23 @@ export class Jugar {
     }
 
 
-    this.http.get<any>(`http://localhost:8000/api/ligas/obtenerResultados/${this.idLiga}`, { withCredentials: true })
+    this.http.get<any>(`https://ligas80api.drg80dev.com/api/ligas/obtenerResultados/${this.idLiga}`, {
+      withCredentials: true,
+      headers: { 'Accept': 'application/json' }
+    })
       .subscribe({
         next: (res) => {
-          console.log(res)
-          this.jornadaJugada=true;
-
-          this.resultados = [];
+          console.log(res);
+          // Cambiamos el estado de la vista para mostrar las tarjetas de resultados en el HTML
+          this.jornadaJugada = true;
+          this.resultados = []; // Vaciamos la memoria previa
 
           if (!res) return;
 
           let datosProcesados = res;
 
 
+          // Por si el servidor devuelve el JSON serializado como un string doble
           if (typeof datosProcesados === 'string') {
             try {
               datosProcesados = JSON.parse(datosProcesados);
@@ -493,36 +485,36 @@ export class Jugar {
           }
 
 
+
           Object.keys(datosProcesados).forEach(partidoKey => {
-
-
             let objetoPartido = partidoKey;
 
-
+            // Por seguridad, aseguramos que la clave sea manipulable
             if (typeof objetoPartido === 'string') {
               try { objetoPartido = JSON.parse(objetoPartido); } catch(e) {}
             }
 
             if (!objetoPartido) return;
 
+            // Extraemos las IDs de los contrincantes
             const ids = objetoPartido.split('-');
-            const idLocal = +ids[0];
+            const idLocal = +ids[0]; // El '+' castea el string a Number
             const idVisitante = +ids[1];
+
             const partidosDeLaJornada: any[] = [];
 
+            // Extraemos los Goles del marcador
             const resultado = datosProcesados[objetoPartido];
-
             const goles = resultado.split('-');
             const golesLocal = +goles[0];
             const golesVisitante = +goles[1];
 
-            //Buscar Nombres
+
+            // Buscamos los objetos completos en memoria para pintar los nombres en pantalla
             const equipoLocal = this.equipos?.find(e => e.id === idLocal);
             const equipoVisitante = this.equipos?.find(e => e.id === idVisitante);
 
-
-
-
+            // Montamos el objeto final para el html
             partidosDeLaJornada.push({
               idLocal: idLocal,
               idVisitante: idVisitante,
@@ -530,9 +522,7 @@ export class Jugar {
               visitante: equipoVisitante ? equipoVisitante : `Equipo ${idVisitante}`,
               golesLocal: golesLocal,
               golesVisitante: golesVisitante
-
             });
-
 
             this.resultados.push({
               partido: partidosDeLaJornada
@@ -542,18 +532,18 @@ export class Jugar {
 
           this.resultados.sort((a, b) => a.jornada - b.jornada);
 
-          console.log('Resultados cargados:', this.resultados);
+          console.log('Resultados cargados y mapeados:', this.resultados);
         },
         error: (err) => {
+
           console.error('Error al obtener los resultados:', err);
         }
       });
   }
 
+  // Función para terminar la jornada
   terminarJornada() {
-
     if (!this.idLiga) return;
-
 
     Swal.fire({
       title: '¿Finalizar Jornada?',
@@ -565,14 +555,13 @@ export class Jugar {
       confirmButtonText: 'Sí, siguiente jornada',
       cancelButtonText: 'Esperar'
     }).then((result) => {
-
       if (result.isConfirmed) {
-
-
-        this.http.put(`http://localhost:8000/api/ligas/terminarJornada/${this.idLiga}`, {}, { withCredentials: true })
+        this.http.put(`https://ligas80api.drg80dev.com/api/ligas/terminarJornada/${this.idLiga}`, {}, {
+          withCredentials: true,
+          headers: { 'Accept': 'application/json' }
+        })
           .subscribe({
             next: (res: any) => {
-
               Swal.fire({
                 icon: 'success',
                 title: '¡Jornada Finalizada!',
@@ -580,10 +569,8 @@ export class Jugar {
                 timer: 1500,
                 showConfirmButton: false
               }).then(() => {
-
                 window.location.reload();
               });
-
             },
             error: (err) => {
               console.error('Error al terminar la jornada:', err);

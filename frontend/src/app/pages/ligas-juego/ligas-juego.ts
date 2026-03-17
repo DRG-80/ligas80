@@ -25,7 +25,7 @@ export class LigasJuego implements OnInit {
 
   public idLiga: number | null = null;
   public pertenencia: boolean = false;
-  public elegido: boolean = false;
+  public elegido: boolean = false; // Booleano para saber si hay un equipo elegido
   equiposDisponibles: any[] = [];
   miEquipo: any = null;
   cargando: boolean=true;
@@ -61,6 +61,7 @@ export class LigasJuego implements OnInit {
       }
     };
 
+    // Coge el id del parametro enviado por la ruta
     const idParam = this.route.snapshot.paramMap.get('id');
 
     if (idParam) {
@@ -91,11 +92,14 @@ export class LigasJuego implements OnInit {
     });
   }
 
+  // Función para comprobar si la liga le pertenece al usuario
   comprobarPertenencia(idLiga: number, idUsuario: number) {
-    this.http.get(`http://localhost:8000/api/ligasEquipo/perteneceLigaAlUsuario/${idLiga}/${idUsuario}`, { withCredentials: true })
+    this.http.get(`https://ligas80api.drg80dev.com/api/ligasEquipo/perteneceLigaAlUsuario/${idLiga}/${idUsuario}`, {
+      withCredentials: true,
+      headers: { 'Accept': 'application/json' }
+    })
       .subscribe({
         next: (res) => {
-
           if (!res) {
             console.error('⛔ Esta liga no te pertenece o no existe');
             this.router.navigate(['/ligas']);
@@ -103,7 +107,6 @@ export class LigasJuego implements OnInit {
             console.log('✅ Acceso permitido');
             this.pertenencia=true;
             this.comprobarEquipoElegido(idLiga);
-
           }
         },
         error: (err) => {
@@ -113,21 +116,20 @@ export class LigasJuego implements OnInit {
       });
   }
 
+  // Función para comprobar si en esa liga hay un equipo elegido
   comprobarEquipoElegido(idLiga: number) {
-    this.http.get(`http://localhost:8000/api/ligasEquipo/hayEquipoElegido/${idLiga}`, { withCredentials: true })
+    this.http.get(`https://ligas80api.drg80dev.com/api/ligasEquipo/hayEquipoElegido/${idLiga}`, {
+      withCredentials: true,
+      headers: { 'Accept': 'application/json' }
+    })
       .subscribe({
         next: (res) => {
-
           if (res) {
-
             this.elegido=true;
             this.obtenerEquipoElegido(idLiga);
-
-
           } else {
             this.elegido=false;
             this.cargarEquipos(idLiga);
-
           }
         },
         error: (err) => {
@@ -137,14 +139,16 @@ export class LigasJuego implements OnInit {
       });
   }
 
+  // Carga los equipos de la liga
   cargarEquipos(idLiga: number) {
-
-    this.http.get<any[]>(`http://localhost:8000/api/ligasEquipo/${idLiga}`, { withCredentials: true })
+    this.http.get<any[]>(`https://ligas80api.drg80dev.com/api/ligasEquipo/${idLiga}`, {
+      withCredentials: true,
+      headers: { 'Accept': 'application/json' }
+    })
       .subscribe({
         next: (res) => {
           this.equiposDisponibles = res;
           this.cargando = false;
-
           if (!this.dtTrigger.closed) {
             this.dtTrigger.next(null);
           }
@@ -153,14 +157,12 @@ export class LigasJuego implements OnInit {
       });
   }
 
+  // Función para elegir equipo
   elegirEquipo(idEquipo: number) {
-
     if (!this.idLiga) {
       console.error('No hay ID de liga cargado');
       return;
     }
-
-
     Swal.fire({
       title: '¿Estás seguro?',
       text: "Vas a tomar el control de este equipo en la liga. Esta acción no se puede deshacer.",
@@ -171,14 +173,14 @@ export class LigasJuego implements OnInit {
       confirmButtonText: 'Sí, elegir equipo',
       cancelButtonText: 'Cancelar'
     }).then((result) => {
-
-
       if (result.isConfirmed) {
         const payload = {
           id_equipo: idEquipo
         };
-
-        this.http.post(`http://localhost:8000/api/ligasEquipo/elegir/${this.idLiga}`, payload, { withCredentials: true })
+        this.http.post(`https://ligas80api.drg80dev.com/api/ligasEquipo/elegir/${this.idLiga}`, payload, {
+          withCredentials: true,
+          headers: { 'Accept': 'application/json' }
+        })
           .subscribe({
             next: (res) => {
               Swal.fire({
@@ -207,22 +209,22 @@ export class LigasJuego implements OnInit {
     });
   }
 
+  // Función para obtener el equipo elegido
   obtenerEquipoElegido(idLiga: number) {
-
-    this.http.get<any[]>(`http://localhost:8000/api/ligasEquipo/obtenerEquipoElegido/${idLiga}`, { withCredentials: true })
+    this.http.get<any[]>(`https://ligas80api.drg80dev.com/api/ligasEquipo/obtenerEquipoElegido/${idLiga}`, {
+      withCredentials: true,
+      headers: { 'Accept': 'application/json' }
+    })
       .subscribe({
         next: (res) => {
           this.miEquipo = res;
           this.cargando = false;
-
-
           if (!this.dtTrigger.closed) {
             this.dtTrigger.next(null);
           }
         },
         error: (err) => console.error('Error al obtener equipo:', err)
       });
-
   }
 
 }

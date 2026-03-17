@@ -1,3 +1,4 @@
+<title>Fichajes</title>
 
 <body>
 <app-header></app-header>
@@ -45,6 +46,7 @@
 
     <div class="card shadow p-4 border-0 mt-4">
 
+      <!-- Vista jugadores libres -->
 
       <div class="table-responsive" *ngIf="!fichajesEquipos">
         <table id="tablaLibres" datatable [dtOptions]="dtOptions" [dtTrigger]="dtTriggerLibres" class="table table-striped table-hover w-100 tabla-fichajes">
@@ -83,6 +85,7 @@
         </table>
       </div>
 
+      <!-- Vista jugadores de otros equipos -->
 
       <div class="table-responsive" *ngIf="fichajesEquipos">
         <table id="tablaEquipos" datatable [dtOptions]="dtOptions" [dtTrigger]="dtTriggerEquipos" class="table table-striped table-hover w-100 tabla-fichajes">

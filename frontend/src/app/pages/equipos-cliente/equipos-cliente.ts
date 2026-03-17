@@ -22,8 +22,10 @@ export class EquiposCliente implements OnInit {
 
   equipos: any[] = [];
   misEquipos: any[] = [];
-  misEquiposEstado = false;
+  misEquiposEstado = false; //Variable para controlar la vista que se muestra
   public cargando: boolean = true;
+
+// Se captura la instancia del DataTable del HTML para poder reiniciarla/destruirla
   @ViewChild(DataTableDirective, {static: false})
   dtElement!: DataTableDirective;
 
@@ -89,12 +91,14 @@ export class EquiposCliente implements OnInit {
   cargarEquipos() {
     this.cargando = true;
 
-    this.http.get<any[]>('http://localhost:8000/api/equipos', { withCredentials: true })
+    this.http.get<any[]>('https://ligas80api.drg80dev.com/api/equipos', {
+      withCredentials: true,
+      headers: { 'Accept': 'application/json' }
+    })
       .subscribe({
         next: (res) => {
           this.equipos = res;
           this.cargando = false;
-
 
           setTimeout(() => {
             if (!this.dtTriggerEquiposComunidad.closed) {
@@ -109,18 +113,21 @@ export class EquiposCliente implements OnInit {
       });
   }
 
+  //Obtener los equipos del usuario
   getMisEquipos() {
     const usuario = this.auth.usuarioActual();
 
     if (usuario && usuario.id) {
       this.cargando = true;
 
-      this.http.get<any[]>(`http://localhost:8000/api/equipos/misEquipos/${usuario.id}`, { withCredentials: true })
+      this.http.get<any[]>(`https://ligas80api.drg80dev.com/api/equipos/misEquipos/${usuario.id}`, {
+        withCredentials: true,
+        headers: { 'Accept': 'application/json' }
+      })
         .subscribe({
           next: (res) => {
             this.misEquipos = res;
             this.cargando = false;
-
 
             setTimeout(() => {
               if (!this.dtTriggerEquiposPropios.closed) {
@@ -139,18 +146,19 @@ export class EquiposCliente implements OnInit {
     }
   }
 
+  // Alternar vista
   alternarVista() {
 
+    // Se verifica si la directiva de la tabla está cargada y tiene una instancia activa de jQuery
     if (this.dtElement && this.dtElement.dtInstance) {
 
-
+      // Se extrae la instancia mediante una promesa
       this.dtElement.dtInstance.then((dtInstance: any) => {
 
-
-
+        // Se destruye la capa visual interactiva (paginación, buscador) devolviendo la tabla a HTML básico
         dtInstance.destroy();
 
-
+        // Una vez destruida de forma segura, se dispara la lógica de cambio de variables
         this.ejecutarCambioVista();
 
       }).catch(() => {
@@ -158,26 +166,32 @@ export class EquiposCliente implements OnInit {
         this.ejecutarCambioVista();
       });
 
+    } else {
+      // Si no había ninguna tabla renderizada aún, se cambia la vista directamente
+      this.ejecutarCambioVista();
     }
   }
 
   private ejecutarCambioVista() {
+
+    // Alterna el estado (true/false). Esto disparará automáticamente los *ngIf del HTML
     this.misEquiposEstado = !this.misEquiposEstado;
 
-
+    // Se desconecta los canales antiguos para evitar fugas de memoria
     if (this.dtTriggerEquiposComunidad) this.dtTriggerEquiposComunidad.unsubscribe();
     if (this.dtTriggerEquiposPropios) this.dtTriggerEquiposPropios.unsubscribe();
 
+    // Se crean canales nuevos
     this.dtTriggerEquiposComunidad = new Subject<any>();
     this.dtTriggerEquiposPropios = new Subject<any>();
 
     this.cargando = true;
 
-
+    // Lógica de enrutamiento interno a la API
     if (this.misEquiposEstado) {
-      this.getMisEquipos();
+      this.getMisEquipos(); // Petición a Laravel: Trae solo los míos
     } else {
-      this.cargarEquipos();
+      this.cargarEquipos(); // Petición a Laravel: Trae todos
     }
   }
 
@@ -222,14 +236,17 @@ export class EquiposCliente implements OnInit {
       return;
     }
 
-    this.http.post('http://localhost:8000/api/equipos', this.nuevoEquipo, { withCredentials: true })
+    this.http.post('https://ligas80api.drg80dev.com/api/equipos', this.nuevoEquipo, {
+      withCredentials: true,
+      headers: { 'Accept': 'application/json' }
+    })
       .subscribe({
         next: (res) => {
           Swal.fire({
             icon: 'success',
             title: '¡Equipo creado!',
             text: 'El equipo se ha añadido correctamente.',
-            confirmButtonColor: '#3085d6',
+            confirmButtonColor: '#d33',
             confirmButtonText: 'Continuar'
           }).then((result) => {
             if (result.isConfirmed) {
@@ -272,14 +289,17 @@ export class EquiposCliente implements OnInit {
       return;
     }
 
-    this.http.put(`http://localhost:8000/api/equipos/${this.equipoEditado.id}`, this.equipoEditado, { withCredentials: true })
+    this.http.put(`https://ligas80api.drg80dev.com/api/equipos/${this.equipoEditado.id}`, this.equipoEditado, {
+      withCredentials: true,
+      headers: { 'Accept': 'application/json' }
+    })
       .subscribe({
         next: () => {
           Swal.fire({
             icon: 'success',
             title: '¡Editado!',
             text: 'Equipo actualizado correctamente.',
-            confirmButtonColor: '#3085d6'
+            confirmButtonColor: '#d33'
           }).then(() => {
             window.location.reload();
           });
@@ -296,19 +316,25 @@ export class EquiposCliente implements OnInit {
       });
   }
 
-  eliminarEquipo(id: number) {
+  /*eliminarEquipo(id: number) {
     Swal.fire({
       title: '¿Estás seguro?',
       text: "No podrás revertir esta acción",
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#d33',
-      cancelButtonColor: '#3085d6',
+      cancelButtonColor: '#000',
       confirmButtonText: 'Sí, eliminar',
       cancelButtonText: 'Cancelar'
     }).then((result) => {
       if (result.isConfirmed) {
-        this.http.delete(`http://localhost:8000/api/equipos/${id}`, { withCredentials: true })
+
+        this.http.delete(`https://ligas80api.drg80dev.com/api/equipos/${id}`, {
+          withCredentials: true,
+          headers: {
+            'Accept': 'application/json'
+          }
+        })
           .subscribe({
             next: () => {
               Swal.fire('¡Eliminado!', 'El equipo ha sido borrado.', 'success')
@@ -321,9 +347,9 @@ export class EquiposCliente implements OnInit {
           });
       }
     });
-  }
+  }*/
 
-
+  //Cerrar la suscripción para ambas DataTable
   ngOnDestroy(): void {
     if (this.dtTriggerEquiposComunidad) {
       this.dtTriggerEquiposComunidad.unsubscribe();

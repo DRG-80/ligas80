@@ -18,7 +18,7 @@ class LigaEquipo extends Model
         'alineacion',
     ];
 
-    // 👇 ¡ESTO ES LO QUE TE FALTA! 👇
+
     protected $casts = [
         'alineacion' => 'array',
     ];
