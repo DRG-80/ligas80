@@ -108,10 +108,15 @@ export class Clasificacion {
             this.jornada = datos.jornada || 0;
             this.posiciones= datos.posiciones;
             this.cargarClasificacion();
+          } else {
+            setTimeout(() => {
+              this.cargando = false;
+            }, 500);
           }
           console.log('Datos de la liga recibidos correctamente');
         },
         error: (err) => {
+          this.cargando = false;
           console.error('Error al cargar la plantilla:', err);
         }
       });
